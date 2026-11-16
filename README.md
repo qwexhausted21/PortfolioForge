@@ -9,18 +9,20 @@
 
 ## 📖 Описание
 
-Описание не добавлено.
+Desktop-инструмент для публикации проектов на GitHub с Web-интерфейсом.
 
 
 ## 🛠 Стек технологий
 
-Не указан
+- Python
+- FastApi
+- PyWebView
 
 ## 📦 Установка
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/USERNAME/PortfolioForge.git
+git clone https://github.com/qwexhausted21/PortfolioForge.git
 cd PortfolioForge
 
 # Создайте виртуальное окружение
