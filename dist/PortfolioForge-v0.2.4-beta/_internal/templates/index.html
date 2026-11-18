@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioForge — публикация проектов на GitHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen selection:bg-cyan-500 selection:text-black">
+
+    <!-- Фоновая сетка для техно-эстетики -->
+    <div class="fixed inset-0 -z-10 bg-[radial-gradient(1.2em circle at top left,transparent_16%,#0a0a0f_16%,#0a0a0f_50%,transparent_50%),radial-gradient(1.2em circle at top right,transparent_16%,#0a0a0f_16%,#0a0a0f_50%,transparent_50%)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-80 pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.4)]">
+                    <span class="text-white font-bold text-lg">PF</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-white">Portfolio<span class="text-cyan-400">Forge</span></h1>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider">Desktop-инструмент для публикации проектов на GitHub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Статус токена -->
+                <div id="tokenStatus" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800/60 border border-gray-700 text-xs text-gray-300 backdrop-blur-sm">
+                    <span id="tokenStatusDot" class="w-2 h-2 rounded-full bg-gray-500"></span>
+                    <span id="tokenStatusText">Токен не задан</span>
+                </div>
+                <button id="openTokenModalBtn" class="px-4 py-2 rounded-lg border border-gray-600 text-sm font-semibold text-gray-200 hover:bg-gray-800 hover:border-cyan-500/50 transition-all">
+                    Токен GitHub
+                </button>
+                <button id="openLibraryBtn" class="px-4 py-2 rounded-lg border border-gray-600 text-sm font-semibold text-gray-200 hover:bg-gray-800 hover:border-purple-500/50 transition-all">
+                    Библиотека
+                </button>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Сервер запущен
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Модал: ввод и проверка токена -->
+        <div id="tokenModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <!-- Фон -->
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="tokenModalBackdrop"></div>
+
+            <!-- Окно модала -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 space-y-5 bg-gray-900/90 border border-gray-700 rounded-2xl shadow-2xl transform transition">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-purple-600/20 flex items-center justify-center text-purple-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h3 id="modal-title" class="text-lg font-bold text-white">Токен GitHub</h3>
+                </div>
+                <p class="text-sm text-gray-400">
+                    Введите Personal Access Token (права <code class="text-cyan-400">repo</code>). Токен сохранится в <code class="text-cyan-400">.env</code> и не попадёт в коммиты.
+                </p>
+
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-gray-300">Токен</label>
+                    <input type="password" id="tokenInput" placeholder="ghp_…"
+                        class="input-field w-full">
+                    <p class="text-xs text-gray-500">Токен виден только вам, не передаётся на сторонние серверы.</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="validateTokenBtn" class="flex-1 btn-neon py-2.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all">
+                        Проверить токен
+                    </button>
+                    <button id="saveTokenBtn" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-600 bg-gray-800 text-gray-200 font-semibold text-sm hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        Сохранить
+                    </button>
+                </div>
+
+                <div id="tokenResult" class="hidden p-3 rounded-lg text-sm">
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="closeTokenModalBtn" class="text-sm text-gray-400 hover:text-white transition-colors">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Левая панель: форма -->
+            <section class="lg:col-span-5 space-y-6">
+                <div class="glass p-6 rounded-2xl shadow-2xl border border-white/10 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyan-400 via-purple-600 to-pink-500"></div>
+                    <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+                        Форма проекта
+                    </h2>
+
+                    <form id="publishForm" class="space-y-5" novalidate>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Название проекта <span class="text-red-500">*</span></label>
+                            <input type="text" id="projectName" placeholder="Например: my-awesome-portfolio"
+                                class="input-field w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Описание</label>
+                            <textarea id="description" rows="3" placeholder="Кратко о проекте…"
+                                class="input-field w-full"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Стек технологий</label>
+                            <textarea id="techStack" rows="2" placeholder="Python, FastAPI, PyGithub, Tailwind CSS"
+                                class="input-field w-full"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Через запятую — для бейджей в README.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Ссылка на демо</label>
+                            <input type="url" id="demoLink" placeholder="https://user.github.io/repo/"
+                                class="input-field w-full">
+                        </div>
+
+                        <div class="pt-2">
+                            <label class="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                                <button type="button" id="selectFolderBtn" class="folder-btn flex items-center gap-2 w-full lg:w-auto px-4 py-2.5 text-sm font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 group-hover:border-cyan-400/50">
+                                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                                    Выбрать папку с проектом
+                                </button>
+                            </label>
+                            <div id="folderPath" class="mt-2 text-xs font-mono text-gray-400 bg-black/20 rounded-lg p-2 border border-white/5"></div>
+                        </div>
+
+                        <!-- Чекбокс апдейта существующего репозитория -->
+                        <div class="flex items-start gap-2 pt-1">
+                            <input type="checkbox" id="updateExisting" class="w-4 h-4 rounded text-cyan-600 bg-gray-800 border-gray-600 focus:ring-cyan-500 focus:ring-1 mt-0.5">
+                            <label for="updateExisting" class="text-sm text-gray-300 leading-snug">
+                                Обновить существующий репозиторий, если он уже есть
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1">При включении — код пушится в уже существующий репозиторий с этим именем.</p>
+                        </div>
+
+                        <button type="button" id="publishBtn" class="btn-neon w-full py-3.5 rounded-xl font-bold text-lg uppercase tracking-wider mt-2 disabled:opacity-50 disabled:filter:[grayscale(0.8)] disabled:cursor-not-allowed transition-all">
+                            Опубликовать на GitHub
+                        </button>
+
+                    </form>
+
+                    <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gray-500 leading-relaxed">
+                        <p class="mb-2">Как это работает:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>README.md генерируется автоматически с бейджами и инструкцией.</li>
+                            <li>Создаётся репозиторий под именем проекта (или обновляется существующий).</li>
+                            <li>Проект коммитится и пушится на GitHub одной кнопкой.</li>
+                            <li>Токен берётся из <code class="text-cyan-400">.env</code> (GITHUB_TOKEN).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Правая панель: настройки + логи + прогресс -->
+            <section class="lg:col-span-7 flex flex-col gap-4 h-full">
+                <!-- Тип репозитория + редактор README (в верхней части) -->
+                <div class="glass p-6 rounded-2xl shadow-2xl border border-white/10">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-3">Тип репозитория</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="repoVisibility" value="public" checked class="w-4 h-4 text-cyan-600 bg-gray-800 border-gray-600 focus:ring-cyan-500">
+                                    <span class="text-sm text-gray-300">Публичный</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="repoVisibility" value="private" class="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-300">Приватный</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-300 mb-1">Редактировать README.md</label>
+                                <p class="text-xs text-gray-500">Изменить сгенерированное содержимое перед публикацией</p>
+                            </div>
+                            <button type="button" id="toggleReadmeEditorBtn" class="px-3 py-1.5 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 text-sm font-semibold hover:bg-gray-700 transition-all">
+                                Открыть редактор
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Консоль логов (скрыта по умолчанию) -->
+                <div class="glass p-0 rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col h-full">
+                    <div class="px-5 py-4 border-b border-white/10 bg-black/20 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M8 9h3m-4 3v12a1 1 0 001-1h12a1 1 0 001-1V7a1 1 0 00-1-1H9a1 1 0 00-1 1z"></path></svg>
+                            Консоль логов
+                        </h2>
+                        <div class="flex items-center gap-2">
+                            <button id="toggleLogsBtn" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors" title="Показать/скрыть логи">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.482 7.225 8.016 4 13.542 4c5.537 0 10.071 3.225 11.095 8 1.017 4.772-4.963 8-10.595 8-5.537 0-10.071-3.225-11.095-8zM12 14l2-2 2 2m-1-5.036a3 3 0 11-5.364 0"></path></svg>
+                                Логи
+                            </button>
+                            <button id="clearLogsBtn" class="text-xs text-gray-400 hover:text-white transition-colors">Очистить</button>
+                        </div>
+                    </div>
+                    <div id="logsContainer" class="max-h-64 overflow-y-auto p-5 font-mono text-sm space-y-2 bg-black/30 hidden">
+                        <div class="text-gray-500 italic">Готов к работе. Заполните форму и нажмите «Опубликовать».</div>
+                    </div>
+                    <div class="px-5 py-3 border-t border-white/10 bg-black/20 text-xs text-gray-500 flex justify-between items-center">
+                        <span>PortfolioForge v0.2.4-beta</span>
+                        <span class="flex items-center gap-1.5"><span id="wsStatus" class="w-2 h-2 rounded-full bg-gray-600"></span> Веб-сокет отключён</span>
+                    </div>
+                </div>
+
+                <!-- Кнопка «Перейти к репозиторию» -->
+                <button id="goToRepoBtn" class="hidden w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-600 text-white hover:bg-emerald-500 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                    Перейти к репозиторию на GitHub
+                </button>
+            </section>
+        </div>
+    </div>
+
+    <!-- Модал конфликта пуша -->
+    <div id="pushConflictModal" class="fixed inset-0 z-60 hidden" aria-labelledby="pushConflictTitle" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" id="pushConflictBackdrop"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 bg-gray-900/95 border border-red-500/30 rounded-2xl shadow-2xl transform transition">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 id="pushConflictTitle" class="text-lg font-bold text-white">Конфликт публикации</h3>
+            </div>
+            <p class="text-sm text-gray-300 mb-6">
+                На GitHub есть изменения, которых нет на вашем компьютере.<br>
+                Если перезаписать — они пропадут навсегда.
+            </p>
+            <div class="flex gap-3 mb-4">
+                <button id="pushMergeBtn" class="flex-1 py-2.5 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 font-semibold text-sm hover:bg-gray-700 transition-all">
+                    Слить с локальными
+                </button>
+                <button id="pushForceBtn" class="flex-1 py-2.5 rounded-lg border border-red-500 bg-red-500/10 text-red-400 font-semibold text-sm hover:bg-red-500/20 transition-all">
+                    Перезаписать на GitHub
+                </button>
+            </div>
+            <p class="text-xs text-gray-500">
+                «Перезаписать» удалит чужую работу из репозитория. Используйте осторожно.
+            </p>
+        </div>
+    </div>
+
+    <!-- Модал редактора README.md -->
+    <div id="readmeModal" class="fixed inset-0 z-50 hidden" aria-labelledby="readmeModalTitle" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" id="readmeModalBackdrop"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl p-6 bg-gray-900/95 border border-gray-700 rounded-2xl shadow-2xl transform transition">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="readmeModalTitle" class="text-lg font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    Редактор README.md
+                </h3>
+                <button id="closeReadmeModalBtn" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <textarea id="readmeEditor" rows="20" placeholder="Содержимое README.md…"
+                class="w-full font-mono text-sm bg-black/40 border border-gray-600 rounded-lg p-4 text-gray-200 focus:ring-cyan-500 focus:border-cyan-500 outline-none"></textarea>
+            <div class="mt-4 flex justify-end gap-2">
+                <button id="cancelReadmeBtn" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700 transition-all">
+                    Отмена
+                </button>
+                <button id="saveReadmeBtn" class="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-500 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                    Сохранить и использовать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backdrop для drawer библиотеки -->
+    <div id="libraryBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
+
+    <!-- Выезжающая панель библиотеки справа -->
+    <div id="libraryDrawer" class="fixed inset-y-0 right-0 w-full max-w-md bg-gray-900 border-l border-gray-700 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-full z-50 flex flex-col">
+        <!-- Заголовок drawer -->
+        <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 10l3.566-3.566a2 2 0 012.828 0L16 10m-5-5L8 5m0 0L3 10m5 5l3.566 3.566a2 2 0 01-2.828 0L5 10z"></path></svg>
+                Библиотека репозиториев
+            </h2>
+            <button id="closeLibraryBtn" class="text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <!-- Содержимое drawer с прокруткой -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-5">
+            <div class="flex gap-2">
+                <button id="loadUserReposBtn" class="flex-1 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 text-sm font-semibold hover:bg-gray-700 transition-all">
+                    Загрузить из GitHub
+                </button>
+                <button id="showManualAddBtn" class="px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 text-sm font-semibold hover:bg-gray-700 transition-all">
+                    Вручную
+                </button>
+            </div>
+
+            <!-- Форма ручного добавления (скрыта по умолчанию) -->
+            <div id="manualAddForm" class="hidden p-3 rounded-lg bg-black/20 border border-white/5">
+                <div class="flex gap-2 mb-2">
+                    <input type="url" id="manualRepoUrl" placeholder="https://github.com/owner/repo"
+                        class="flex-1 input-field text-sm">
+                    <button id="addManualRepoBtn" class="px-3 py-2 rounded-lg border border-emerald-500 bg-emerald-500/10 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/20 transition-all">
+                        Добавить
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500">Пример: https://github.com/username/my-project</p>
+            </div>
+
+            <div id="libraryReposList" class="space-y-2">
+                <div class="text-xs text-gray-500 italic">Библиотека пуста. Загрузите репозитории из GitHub или добавьте их вручную.</div>
+            </div>
+        </div>
+
+        <div class="px-6 py-3 border-t border-gray-700 text-xs text-gray-500 text-center">
+            PortfolioForge v0.2.4-beta
+        </div>
+    </div>
+
+    <!-- Прогресс-бар внизу страницы -->
+    <div id="progressSection" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-900 border-t border-gray-700 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
+                <span id="progressLabel">Подготовка…</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2">
+                <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
