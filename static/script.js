@@ -492,23 +492,11 @@
         return;
       }
       appendLog("Пул выполнен. Повторяю публикацию…");
-      // Просто делаем git push в текущей папке (не пересоздаём репозиторий)
-      try {
-        const pushRes = await fetch(`${BASE}/git/push`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ folder_path: els.folderPath.textContent.replace("(папка не выбрана)", "").trim() }),
-        });
-        const pushData = await pushRes.json();
-        if (!pushRes.ok) {
-          appendLog(`Ошибка пуша: ${pushData.error || pushRes.status}`);
-          return;
-        }
-        appendLog("Пуш выполнен успешно!");
-        appendLog(pushData.output || "");
-      } catch (err) {
-        appendLog(`Ошибка при пуше: ${err.message}`);
+      // Повторяем публикацию с update_if_exists=true, чтобы не было ошибки "репозиторий уже существует"
+      if (els.pendingPush) {
+        els.pendingPush.update_if_exists = true;
       }
+      publishWithPayload(els.pendingPush);
     } catch (err) {
       appendLog(`Ошибка при пуле: ${err.message}`);
     }

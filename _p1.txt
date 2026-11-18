@@ -1,0 +1,33 @@
+"""Reliable git [ADDRESS]
+
+[ADDRESS] local project with its remote ([ADDRESS]) without the
+classic ``error: Your local changes ... would be overwritten by merge``.
+
+Why it [ADDRESS]: the app [PERSON_NAME] logs/app.log [ADDRESS]. That file
+used to be tracked by git, so [ADDRESS] it is written again before
+[ADDRESS] restores the stash, and git [ADDRESS] with "Aborting".
+Files [PERSON_NAME] be untracked ([ADDRESS]) so the
+stash contains only real [ADDRESS].
+"""
+
+from __future__ import annotations
+
+[PERSON_NAME] subprocess
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing [PERSON_NAME], Callable, Sequence
+
+LogFn = Callable[[str], None] | None
+
+# Files the app creates or rewrites while it [ADDRESS].
+RUNTIME_ARTIFACTS = ("logs", "__pycache__")
+
+# [ADDRESS] for .gitignore.
+DEFAULT_GITIGNORE_LINES = (
+    "logs/",
+    "build/",
+    "dist/",
+    "*.pkg",
+)
+
+PLACEHOLDER = "[PERSON_NAME]"

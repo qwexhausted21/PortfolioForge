@@ -325,10 +325,10 @@ async def readme_load(request: Request) -> JSONResponse:
 
 @app.post("/git/pull-rebase")
 async def git_pull_rebase(request: Request) -> JSONResponse:
-    """Выполняет git fetch + git reset --hard origin/main в указанной папке.
+    """Выполняет git pull --rebase в указанной папке.
 
-    Перед сбросом делает git stash push -u (включая неотслеживаемые файлы),
-    а после сброса — git stash pop, чтобы вернуть изменения обратно.
+    Перед пулом делает git stash, если есть несохранённые изменения,
+    а после пула — git stash pop, чтобы вернуть изменения обратно.
     """
     import subprocess
 
@@ -342,46 +342,35 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Папка не найдена: {folder}"}, status_code=400)
 
     try:
-        # Скрываем ВСЕ изменения, включая неотслеживаемые файлы (-u)
+        # Скрываем несохранённые изменения, если они есть
         stash_result = subprocess.run(
-            ["git", "stash", "push", "-u", "-m", "PortfolioForge auto-stash before reset"],
+            ["git", "stash", "push", "-m", "PortfolioForge auto-stash before pull --rebase"],
             cwd=str(folder),
             capture_output=True,
             text=True,
         )
         stashed = "No local changes to save" not in stash_result.stdout
-        log_info(f"git stash push -u в {folder}: {stash_result.stdout.strip()}")
 
-        # Скачиваем изменения с удалённого репозитория
-        fetch_result = subprocess.run(
-            ["git", "fetch", "origin"],
+        # Выполняем pull --rebase
+        pull_result = subprocess.run(
+            ["git", "pull", "--rebase"],
             cwd=str(folder),
             capture_output=True,
             text=True,
         )
-        log_info(f"git fetch origin в {folder}: {fetch_result.stdout.strip()} {fetch_result.stderr.strip()}")
-
-        # Сбрасываем локальную ветку в состояние удалённой (убирает все локальные изменения)
-        reset_result = subprocess.run(
-            ["git", "reset", "--hard", "origin/main"],
-            cwd=str(folder),
-            capture_output=True,
-            text=True,
-        )
-        if reset_result.returncode != 0:
+        if pull_result.returncode != 0:
+            # Если есть изменения в stash, пытаемся вернуть их
             if stashed:
-                pop_result = subprocess.run(
+                subprocess.run(
                     ["git", "stash", "pop"],
                     cwd=str(folder),
                     capture_output=True,
                     text=True,
                 )
-                log_info(f"git stash pop после ошибки reset в {folder}: {pop_result.stdout.strip()} {pop_result.stderr.strip()}")
             return JSONResponse(
-                {"error": reset_result.stderr.strip() or "Ошибка git reset --hard origin/main"},
+                {"error": pull_result.stderr.strip() or "Ошибка pull --rebase"},
                 status_code=500,
             )
-        log_info(f"git reset --hard origin/main в {folder}: {reset_result.stdout.strip()}")
 
         # Возвращаем спрятанные изменения, если они были
         if stashed:
@@ -392,43 +381,26 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
                 text=True,
             )
             if pop_result.returncode != 0:
-                # stash pop не удался — пробуем сбросить локальные изменения в отслеживаемых файлах и повторить pop
-                reset_checkout = subprocess.run(
-                    ["git", "checkout", "--", "."],
-                    cwd=str(folder),
-                    capture_output=True,
-                    text=True,
+                # stash pop тоже дал конфликт — возвращаем ошибку пользователю с подробностями
+                log_info(f"git stash pop конфликт в {folder}: {pop_result.stderr.strip()}")
+                return JSONResponse(
+                    {
+                        "error": "stash_pop_conflict",
+                        "message": f"Не удалось вернуть спрятанные изменения после pull --rebase: {pop_result.stderr.strip()}",
+                        "output": pop_result.stdout.strip(),
+                    },
+                    status_code=500,
                 )
-                log_info(f"git checkout -- . после ошибки stash pop в {folder}: {reset_checkout.stdout.strip()} {reset_checkout.stderr.strip()}")
-                pop_result = subprocess.run(
-                    ["git", "stash", "pop"],
-                    cwd=str(folder),
-                    capture_output=True,
-                    text=True,
-                )
-                if pop_result.returncode != 0:
-                    # stash pop всё равно не удался — возвращаем ошибку пользователю
-                    log_info(f"git stash pop конфликт в {folder}: {pop_result.stderr.strip()}")
-                    return JSONResponse(
-                        {
-                            "error": "stash_pop_conflict",
-                            "message": f"Не удалось вернуть спрятанные изменения после слияния: {pop_result.stderr.strip()}",
-                            "output": pop_result.stdout.strip(),
-                        },
-                        status_code=500,
-                    )
-                log_info(f"git stash pop в {folder} (повтор после checkout): {pop_result.stdout.strip()}")
-            else:
-                log_info(f"git stash pop в {folder}: {pop_result.stdout.strip()}")
+            log_info(f"git stash pop в {folder}: {pop_result.stdout.strip()}")
 
-        # Делаем коммит всех изменений после слияния, чтобы пуш прошёл
-        add_result = subprocess.run(
+        # После successful pull --rebase делаем коммит всех изменений, чтобы пуш прошёл
+        commit_result = subprocess.run(
             ["git", "add", "-A"],
             cwd=str(folder),
             capture_output=True,
             text=True,
         )
-        log_info(f"git add -A после merge в {folder}: {add_result.stdout.strip()} {add_result.stderr.strip()}")
+        log_info(f"git add -A после rebase в {folder}: {commit_result.stdout.strip()} {commit_result.stderr.strip()}")
 
         commit_result2 = subprocess.run(
             ["git", "commit", "-m", "Merge remote changes via PortfolioForge"],
@@ -436,49 +408,13 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
             capture_output=True,
             text=True,
         )
-        if commit_result2.returncode != 0:
-            if "nothing to commit" in commit_result2.stdout.lower() or "nothing to commit" in commit_result2.stderr.lower():
-                log_info(f"git commit после merge в {folder}: ничего нового для коммита")
-            else:
-                log_info(f"git commit после merge в {folder}: {commit_result2.stdout.strip()} {commit_result2.stderr.strip()}")
-                return JSONResponse(
-                    {"error": "commit_failed", "message": f"Не удалось создать коммит после слияния: {commit_result2.stderr.strip()}"},
-                    status_code=500,
-                )
+        if commit_result2.returncode != 0 and "nothing to commit" not in commit_result2.stdout.lower():
+            log_info(f"git commit после rebase в {folder}: {commit_result2.stderr.strip()}")
+        else:
+            log_info(f"git commit после rebase в {folder}: {commit_result2.stdout.strip()}")
 
-        log_info(f"git merge origin/main выполнен в {folder}")
-        return JSONResponse({"ok": True, "output": "Слияние выполнено успешно"})
-    except Exception as exc:  # noqa: BLE001
-        return JSONResponse({"error": str(exc)}, status_code=500)
-
-@app.post("/git/push")
-async def git_push_only(request: Request) -> JSONResponse:
-    """Выполняет git push -u origin main в указанной папке."""
-    import subprocess
-
-    data: dict[str, Any] = await request.json()
-    folder_path = (data.get("folder_path") or "").strip()
-    if not folder_path:
-        return JSONResponse({"error": "Укажите папку"}, status_code=400)
-
-    folder = Path(folder_path).resolve()
-    if not folder.is_dir():
-        return JSONResponse({"error": f"Папка не найдена: {folder}"}, status_code=400)
-
-    try:
-        result = subprocess.run(
-            ["git", "push", "-u", "origin", "main"],
-            cwd=str(folder),
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            return JSONResponse(
-                {"error": result.stderr.strip() or "Ошибка git push"},
-                status_code=500,
-            )
-        log_info(f"git push выполнен в {folder}: {result.stdout.strip()}")
-        return JSONResponse({"ok": True, "output": result.stdout.strip()})
+        log_info(f"git pull --rebase выполнен в {folder}: {pull_result.stdout.strip()}")
+        return JSONResponse({"ok": True, "output": pull_result.stdout.strip()})
     except Exception as exc:  # noqa: BLE001
         return JSONResponse({"error": str(exc)}, status_code=500)
 
