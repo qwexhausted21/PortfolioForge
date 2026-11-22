@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PortfolioForge — публикация проектов на GitHub</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/script.js" defer></script>
+    <link rel="stylesheet" href="/static/style.css?v=3">
+    <script src="/static/script.js?v=3" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -71,6 +72,11 @@
                         <label><input type="radio" name="repoVisibility" value="private"> Приватный</label>
                     </div>
                 </fieldset>
+                <div class="branch-field">
+                    <label for="repoBranch">Ветка репозитория</label>
+                    <input id="repoBranch" value="main" placeholder="main" pattern="^[A-Za-z0-9_.\-/]+$" title="Латинские буквы, цифры, точки, дефисы, подчёркивания и слэши">
+                    <p class="hint" id="branchHint">По умолчанию — main.</p>
+                </div>
                 <label class="update"><input type="checkbox" id="updateExisting"> <span>Разрешить обновление существующего репозитория<small>Его видимость не изменится.</small></span></label>
                 <div class="readme-row">
                     <span class="document-mark"><svg><use href="#i-doc"/></svg></span>
@@ -110,7 +116,16 @@
             <header class="dialog-header"><h2 id="readmeTitle">Редактор README.md</h2><button type="button" class="icon-button" data-close aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></header>
             <p class="hint">Изменения сохранятся в папке проекта при публикации.</p>
             <label for="readmeEditor">Текст Markdown</label>
-            <textarea id="readmeEditor" rows="14" spellcheck="false"></textarea>
+            <div class="readme-tabs">
+                <button type="button" class="tab-button active" id="tabEdit" data-tab="edit">Редактировать</button>
+                <button type="button" class="tab-button" id="tabPreview" data-tab="preview">Предпросмотр</button>
+            </div>
+            <div id="readmeEditView">
+                <textarea id="readmeEditor" rows="14" spellcheck="false"></textarea>
+            </div>
+            <div id="readmePreviewView" hidden>
+                <div id="readmePreviewContent" class="preview-content"></div>
+            </div>
             <p id="readmeResult" class="message" role="status" hidden></p>
             <div class="dialog-actions"><button type="button" class="button" id="generateReadmeBtn">Сгенерировать заново</button><button type="button" class="button primary" id="saveReadmeBtn">Использовать этот текст</button></div>
         </div>

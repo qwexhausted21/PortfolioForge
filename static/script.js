@@ -105,7 +105,7 @@
 
   function projectData() {
     const [project_name, description, tech_stack, demo_link] = projectFields.map((id) => $(id).value.trim());
-    return { project_name, description, tech_stack, demo_link, private: $("publishForm").repoVisibility.value === "private" };
+    return { project_name, description, tech_stack, demo_link, branch: $("repoBranch").value.trim() || "main", private: $("publishForm").repoVisibility.value === "private" };
   }
 
   function validProject() {
@@ -328,6 +328,27 @@
     dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
     dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
   });
+
+  function renderPreview(text) {
+    const preview = $("readmePreviewContent");
+    preview.innerHTML = marked.parse(text || "");
+  }
+
+  function switchReadmeTab(tab) {
+    const isEdit = tab === "edit";
+    $("tabEdit").classList.toggle("active", isEdit);
+    $("tabPreview").classList.toggle("active", !isEdit);
+    $("readmeEditView").hidden = !isEdit;
+    $("readmePreviewView").hidden = isEdit;
+    if (!isEdit) renderPreview($("readmeEditor").value);
+  }
+
+  $("tabEdit").addEventListener("click", () => switchReadmeTab("edit"));
+  $("tabPreview").addEventListener("click", () => switchReadmeTab("preview"));
+
+  $("readmeEditor").addEventListener("input", () => {
+    if ($("tabPreview").classList.contains("active")) renderPreview($("readmeEditor").value);
+  });
   activate("selectFolderBtn", selectFolder);
   $("publishForm").addEventListener("submit", publish);
   activate("clearLogsBtn", () => $("logsContainer").replaceChildren());
@@ -336,6 +357,7 @@
     message("readmeResult", "");
     $("readmeModal").showModal();
     $("readmeEditor").focus();
+    switchReadmeTab("edit");
     if (readme === null && !$("generateReadmeBtn").disabled) generateReadme();
   });
   activate("generateReadmeBtn", generateReadme);

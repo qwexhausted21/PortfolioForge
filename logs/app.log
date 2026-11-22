@@ -277,3 +277,19 @@ M  static/script.js
 21:36:31 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
 21:36:31 [INFO] Опубликовано: https://github.com/qwexhausted21/PortfolioForge
 21:36:31 [INFO] Репозиторий добавлен в список сохранённых.
+21:50:07 [INFO] === Начало публикации ===
+21:50:07 [INFO] Генерация README.md...
+21:50:07 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:50:07 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:53:44 [INFO] === Начало публикации ===
+21:53:44 [INFO] Генерация README.md...
+21:53:44 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:53:44 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:05:42 [INFO] === Начало публикации ===
+22:05:42 [INFO] Генерация README.md...
+22:05:42 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:05:42 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:10:36 [INFO] === Начало публикации ===
+22:10:36 [INFO] Генерация README.md...
+22:10:36 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:10:36 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.

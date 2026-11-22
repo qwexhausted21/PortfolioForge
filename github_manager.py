@@ -125,6 +125,7 @@ class GitHubManager:
         *,
         update_if_exists: bool = False,
         private: bool = False,
+        branch: str = "main",
         progress_callback: Callable[[int, str], None] | None = None,
         cancel_event: Event | None = None,
     ) -> List[str]:
@@ -313,8 +314,8 @@ class GitHubManager:
                     # Возможно, коммит уже был — пробуем продолжить пуш
                     log("Коммит не создан (возможно, уже существует). Продолжаю...")
 
-            progress(75, "Переключение на главную ветку main...")
-            self._run_git(folder, ["branch", "-M", "main"], log)
+            progress(75, f"Переключение на ветку {branch}...")
+            self._run_git(folder, ["branch", "-M", branch], log)
 
             progress(80, "Добавление удалённого репозитория origin...")
             self._run_git(folder, ["remote", "remove", "origin"], log, check=False)
@@ -322,9 +323,9 @@ class GitHubManager:
 
             check_cancelled()
 
-            progress(90, "Отправка кода на GitHub (git push -u origin main)...")
+            progress(90, f"Отправка кода на GitHub (git push -u origin {branch})...")
             try:
-                self._run_git(folder, ["push", "-u", "origin", "main"], log)
+                self._run_git(folder, ["push", "-u", "origin", branch], log)
             except subprocess.CalledProcessError as exc:
                 # При апдейте существующего репозитория push может быть не fast-forward.
                 # Проверяем stderr на наличие признаков конфликта (rejected / non-fast-forward).
@@ -340,7 +341,7 @@ class GitHubManager:
 
                 if update_if_exists:
                     log("Обычный push не прошёл. Пробую force push (режим апдейта)...")
-                    self._run_git(folder, ["push", "-u", "origin", "main", "--force"], log)
+                    self._run_git(folder, ["push", "-u", "origin", branch, "--force"], log)
                 else:
                     raise
 

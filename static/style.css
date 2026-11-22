@@ -77,6 +77,8 @@ textarea { resize: vertical; }
 .radio-row label:has(:checked) { border-color: var(--indigo); color: var(--indigo); background: var(--lavender); }
 .update { display: flex; align-items: start; gap: 7px; margin-top: 12px; font-size: 13px; cursor: pointer; }
 .update small { display: block; color: var(--muted); font-size: 12px; }
+.branch-field { margin-top: 12px; }
+.branch-field label { display: block; margin: 11px 0 4px; font-size: 13px; font-weight: 650; }
 .readme-row { margin-top: 15px; padding-block: 12px; border-block: 1px solid var(--line); }
 #publishBtn { width: 100%; margin-top: 15px; min-height: 44px; font-size: 14px; }
 .message { margin-top: 10px; overflow-wrap: anywhere; padding: 8px 10px; border-radius: 6px; font-size: 13px; background: var(--lavender); }
@@ -247,4 +249,94 @@ dialog::backdrop { background: #20233c66; }
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Вкладки редактора README */
+.readme-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab-button {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.tab-button:hover {
+  color: var(--ink);
+  background: var(--lavender);
+}
+
+.tab-button.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+  background: var(--lavender);
+}
+
+[data-theme="dark"] .tab-button:hover {
+  background: var(--white);
+}
+
+.preview-content {
+  padding: 12px;
+  overflow: auto;
+  max-height: 40vh;
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .preview-content {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.preview-content h1, .preview-content h2, .preview-content h3 {
+  margin-top: 1.2em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4em;
+}
+
+.preview-content pre {
+  background: var(--lavender);
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.preview-content code {
+  background: rgba(var(--muted, 85, 93, 117), 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.preview-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.preview-content blockquote {
+  border-left: 4px solid var(--indigo);
+  margin: 0;
+  padding-left: 12px;
+  color: var(--muted);
+}
+
+.preview-content a {
+  color: var(--indigo);
+}
+
+[data-theme="dark"] .preview-content a {
+  color: #6d5dfc;
 }

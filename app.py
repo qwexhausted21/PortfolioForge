@@ -41,6 +41,9 @@ PORT = int(os.getenv("PORT", "8081"))
 # Имя репозитория GitHub: латиница, цифры, точка, дефис, подчёркивание.
 REPO_NAME_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
+# Имя ветки Git: латиница, цифры, точка, дефис, подчёркивание, слэш.
+BRANCH_NAME_RE = re.compile(r"^[A-Za-z0-9_.\-/]+$")
+
 # URL последнего опубликованного репозитория (для кнопки «Перейти к репозиторию»)
 last_published_repo_url: str | None = None
 
@@ -586,6 +589,7 @@ async def publish(request: Request) -> JSONResponse:
     update_if_exists = bool(data.get("update_if_exists"))
     private = bool(data.get("private"))
     readme_content_override = data.get("readme_content")
+    branch = (data.get("branch") or "main").strip() or "main"
 
     if not project_name or not folder_path:
         return JSONResponse(
@@ -596,6 +600,14 @@ async def publish(request: Request) -> JSONResponse:
         return JSONResponse(
             {
                 "error": "Некорректное название репозитория. Разрешены латинские буквы, цифры, точки, дефисы и подчёркивания."
+            },
+            status_code=400,
+        )
+
+    if not BRANCH_NAME_RE.fullmatch(branch):
+        return JSONResponse(
+            {
+                "error": "Некорректное имя ветки. Разрешены латинские буквы, цифры, точки, дефисы, подчёркивания и слэши."
             },
             status_code=400,
         )
@@ -651,6 +663,7 @@ async def publish(request: Request) -> JSONResponse:
                 folder_path,
                 update_if_exists=update_if_exists,
                 private=private,
+                branch=branch,
                 progress_callback=progress_cb,
                 cancel_event=publish_cancel_event,
             )
