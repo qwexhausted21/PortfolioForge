@@ -259,27 +259,9 @@ async def select_folder() -> JSONResponse:
         log_info(f"Выбрана папка: {folder}")
         _save_last_folder(str(folder_path))
 
-        # Читаем название репозитория из локального .git, если там уже есть репозиторий
-        repo_name_from_git = None
-        try:
-            result = subprocess.run(
-                ["git", "config", "--get", "remote.origin.url"],
-                cwd=str(folder_path),
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if result.returncode == 0 and result.stdout.strip():
-                url = result.stdout.strip()
-                name = url.rstrip("/").split("/")[-1]
-                if name.endswith(".git"):
-                    name = name[:-4]
-                if name:
-                    repo_name_from_git = name
-        except Exception:
-            pass
-
-        return JSONResponse({"path": str(folder_path), "repo_name": repo_name_from_git})
+        # Название репозитория — имя выбранной папки
+        repo_name = folder_path.name
+        return JSONResponse({"path": str(folder_path), "repo_name": repo_name})
     return JSONResponse({"path": "", "error": "Диалог выбора папки недоступен или отменён пользователем"})
 
 

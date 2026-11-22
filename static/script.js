@@ -84,7 +84,7 @@
       folder = path;
       $("folderPath").textContent = path;
       showReadme(null);
-      if (repo_name && !$("projectName").value) {
+      if (repo_name) {
         $("projectName").value = repo_name;
       }
       const { content } = await post("/readme/load", { folder_path: folder });
@@ -132,6 +132,7 @@
     progress(0, "Подготовка публикации…");
     $("progressSection").hidden = false;
     publishBtn.lastElementChild.textContent = "Публикуем…";
+    $("publishSpinner").hidden = false;
     try {
       const { url } = await post("/publish", {
         ...projectData(), folder_path: folder,
@@ -144,6 +145,7 @@
     } finally {
       publishing = false;
       cancelBtn.hidden = true;
+      $("publishSpinner").hidden = true;
       $("progressSection").hidden = true;
       publishBtn.lastElementChild.textContent = "Опубликовать на GitHub";
       working(false);

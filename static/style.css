@@ -236,3 +236,15 @@ dialog::backdrop { background: #20233c66; }
 [data-theme="dark"] dialog {
   box-shadow: 0 18px 60px #00000080;
 }
+
+/* Спиннер на кнопке публикации */
+.spinner {
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

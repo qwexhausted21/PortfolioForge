@@ -52,3 +52,105 @@
 21:26:59 [INFO] Генерация README.md...
 21:26:59 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
 21:26:59 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:27:41 [INFO] Выбрана папка: D:/program/PortfolioForge
+21:29:00 [INFO] === Начало публикации ===
+21:29:00 [INFO] Генерация README.md...
+21:29:00 [INFO] README.md сохранён (отредактированный): D:\program\PortfolioForge\README.md
+21:29:00 [INFO] Проверка токена GitHub...
+21:29:00 [INFO] Проверка токена GitHub...
+21:29:00 [INFO] Токен валиден. Пользователь: qwexhausted21
+21:29:00 [INFO] Токен валиден. Пользователь: qwexhausted21
+21:29:01 [INFO] Репозиторий 'qwexhausted21/PortfolioForge' уже найден.
+21:29:01 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+21:29:01 [INFO] Видимость репозитория обновлена: публичный
+21:29:01 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+21:29:01 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+21:29:01 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+21:29:01 [INFO] Инициализация локального репозитория Git (git init)...
+21:29:01 [INFO] Инициализация локального репозитория Git (git init)...
+21:29:01 [INFO] $ git init
+21:29:01 [INFO] Reinitialized existing Git repository in D:/program/PortfolioForge/.git/
+21:29:01 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+21:29:01 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+21:29:01 [INFO] $ git config user.name PortfolioForge
+21:29:01 [INFO] $ git config user.email portfolioforge@localhost
+21:29:02 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+21:29:02 [INFO] Исключение .env из отслеживания Git (защита токена)...
+21:29:02 [INFO] $ git rm --cached --ignore-unmatch .env
+21:29:02 [INFO] Добавление всех файлов в индекс (git add -A)...
+21:29:02 [INFO] $ git add -A
+21:29:02 [INFO] warning: in the working copy of 'static/script.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/conftest.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_github_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_readme_generator.py', LF will be replaced by CRLF the next time Git touches it
+21:29:02 [INFO] $ git status --porcelain
+21:29:02 [INFO] M  .env.example
+M  .gitignore
+D  _check.py
+D  _p1.txt
+D  _probe2.txt
+D  _probe3.txt
+D  _probe4.txt
+D  _redaction_probe.txt
+M  app.py
+M  github_manager.py
+A  last_folder.json
+AM logs/app.log
+M  readme_generator.py
+M  requirements.txt
+M  static/script.js
+M  static/style.css
+M  templates/index.html
+A  tests/conftest.py
+A  tests/test_app.py
+A  tests/test_github_manager.py
+A  tests/test_readme_generator.py
+21:29:02 [INFO] Создание коммита...
+21:29:02 [INFO] Создание коммита...
+21:29:02 [INFO] $ git commit -m Initial commit
+21:29:03 [INFO] [main 655dc01] Initial commit
+ 21 files changed, 1745 insertions(+), 1422 deletions(-)
+ delete mode 100644 _check.py
+ delete mode 100644 _p1.txt
+ delete mode 100644 _probe2.txt
+ delete mode 100644 _probe3.txt
+ delete mode 100644 _probe4.txt
+ delete mode 100644 _redaction_probe.txt
+ create mode 100644 last_folder.json
+ create mode 100644 logs/app.log
+ create mode 100644 tests/conftest.py
+ create mode 100644 tests/test_app.py
+ create mode 100644 tests/test_github_manager.py
+ create mode 100644 tests/test_readme_generator.py
+21:29:03 [INFO] Переключение на главную ветку main...
+21:29:03 [INFO] Переключение на главную ветку main...
+21:29:03 [INFO] $ git branch -M main
+21:29:03 [INFO] Добавление удалённого репозитория origin...
+21:29:03 [INFO] Добавление удалённого репозитория origin...
+21:29:03 [INFO] $ git remote remove origin
+21:29:03 [INFO] $ git remote add origin https://github.com/qwexhausted21/PortfolioForge.git
+21:29:04 [INFO] Отправка кода на GitHub (git push -u origin main)...
+21:29:04 [INFO] Отправка кода на GitHub (git push -u origin main)...
+21:29:04 [INFO] $ git push -u origin main
+21:29:08 [INFO] branch 'main' set up to track 'origin/main'.
+21:29:08 [INFO] To https://github.com/qwexhausted21/PortfolioForge.git
+   4cf95b4..655dc01  main -> main
+21:29:08 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+21:29:08 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+21:29:08 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+21:29:08 [INFO] Опубликовано: https://github.com/qwexhausted21/PortfolioForge
+21:29:08 [INFO] Репозиторий добавлен в список сохранённых.
+21:30:35 [INFO] === Начало публикации ===
+21:30:35 [INFO] Генерация README.md...
+21:30:35 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:30:35 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:32:03 [INFO] Выбрана папка: D:/program/PortfolioForge
+21:32:09 [INFO] Выбрана папка: D:/program/image-gen
+21:32:13 [INFO] Выбрана папка: D:/program/PortfolioForge
+21:33:16 [INFO] === Начало публикации ===
+21:33:16 [INFO] Генерация README.md...
+21:33:16 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:33:16 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
