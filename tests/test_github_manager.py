@@ -191,13 +191,19 @@ class TestCreateRelease:
         manager.last_repo_full_name = "user/testrepo"
 
         mock_repo = Mock()
+        mock_repo.default_branch = "main"
+        mock_ref = Mock()
+        mock_ref.object.sha = "abc123"
+        mock_repo.get_git_ref.return_value = mock_ref
         manager.github.get_repo.return_value = mock_repo
 
         ok, msg = manager.create_release("v0.1.0", "First release")
         assert ok is True
         assert "созданы" in msg.lower()
         manager.github.get_repo.assert_called_once_with("user/testrepo")
-        mock_repo.create_git_tag_and_release.assert_called_once()
+        mock_repo.get_git_ref.assert_called_once_with("heads/main")
+        mock_repo.create_git_ref.assert_called_once()
+        mock_repo.create_git_release.assert_called_once()
 
 
 class TestGitPushConflictError:

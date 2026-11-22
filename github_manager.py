@@ -432,13 +432,23 @@ class GitHubManager:
 
         try:
             repo = _safe_github_call(self.github.get_repo, self.last_repo_full_name)
+
+            # Получаем SHA последнего коммита из ветки по умолчанию для создания тега
+            default_branch = repo.default_branch
+            ref = _safe_github_call(repo.get_git_ref, f"heads/{default_branch}")
+            commit_sha = ref.object.sha
+
+            # Создаём легковесный тег
+            tag_ref = f"refs/tags/{tag}"
+            _safe_github_call(repo.create_git_ref, tag_ref, commit_sha)
+
+            # Создаём релиз, привязанный к тегу
             release_name = f"Release {tag}"
             _safe_github_call(
-                repo.create_git_tag_and_release,
+                repo.create_git_release,
                 tag,
-                tag_message=f"Version {tag}",
-                release_name=release_name,
-                release_message=description or f"Выпуск {tag}",
+                release_name,
+                description or f"Выпуск {tag}",
             )
             logger.info(f"Тег и релиз '{tag}' созданы в {self.last_repo_full_name}.")
             return True, f"Тег '{tag}' и релиз созданы."
