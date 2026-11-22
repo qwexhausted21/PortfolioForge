@@ -452,16 +452,9 @@ let pendingPublishData = null;
   let currentReleaseTag = "";
 
   async function openReleaseModal(repoName) {
-    // Ищем репозиторий в библиотеке, чтобы взять full_name (owner/repo)
-    let fullName = repoName;
-    try {
-      const repos = await api("/repos");
-      const found = repos.find((r) => r.name === repoName || r.full_name === repoName);
-      if (found && found.full_name) fullName = found.full_name;
-    } catch {
-      // Игнорируем — будем использовать repoName как есть
-    }
-    currentReleaseRepo = fullName;
+    // Заполняем поле полного имени репозитория
+    $("releaseRepoName").value = repoName;
+    currentReleaseRepo = repoName;
     $("releaseRepoInfo").hidden = true;
     $("releaseTagsList").replaceChildren();
     $("releaseAssetsList").replaceChildren();
@@ -724,6 +717,13 @@ let pendingPublishData = null;
   $("releaseRefreshBtn").addEventListener("click", () => loadReleaseTags());
   $("releaseChangelogSaveBtn").addEventListener("click", saveReleaseChangelog);
   $("releaseAssetUploadBtn").addEventListener("click", uploadReleaseAsset);
+  $("releaseRepoName").addEventListener("change", async () => {
+    const name = $("releaseRepoName").value.trim();
+    if (!name) return;
+    currentReleaseRepo = name;
+    $("releaseRepoInfo").hidden = true;
+    await loadReleaseTags();
+  });
   $("viewTagsBtn").addEventListener("click", () => {
     const name = $("projectName").value.trim();
     if (!name) {

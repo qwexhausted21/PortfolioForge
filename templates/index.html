@@ -140,6 +140,10 @@
         <div class="dialog-inner">
             <header class="dialog-header"><h2 id="releaseTitle">Теги и релизы</h2><button type="button" class="icon-button" data-close aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></header>
             <p class="hint">Управляйте тегами, ChangeLog и файлами релиза выбранного репозитория.</p>
+            <div class="release-repo-input">
+                <label for="releaseRepoName">Полное имя репозитория (owner/repo)</label>
+                <input id="releaseRepoName" type="text" placeholder="qwexhausted21/PortfolioForge" spellcheck="false">
+            </div>
             <div id="releaseRepoInfo" class="message" role="status" hidden></div>
             <div class="release-tabs">
                 <button type="button" class="tab-button active" id="releaseTabTags" data-tab="tags">Теги</button>

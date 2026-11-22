@@ -413,6 +413,19 @@ dialog::backdrop { background: #20233c66; }
   background: var(--lavender);
 }
 
+.release-repo-input {
+  margin-bottom: 8px;
+}
+.release-repo-input label {
+  display: block;
+  margin: 6px 0 4px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.release-repo-input input {
+  width: 100%;
+}
+
 .release-upload label {
   display: block;
   margin: 8px 0 4px;

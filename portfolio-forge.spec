@@ -74,7 +74,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="PortfolioForge-v0.6.0-beta",
+    name="PortfolioForge-v0.5.0-beta",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -95,5 +95,5 @@ app = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="PortfolioForge-v0.6.0-beta",
+    name="PortfolioForge-v0.5.0-beta",
 )

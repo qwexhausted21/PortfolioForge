@@ -2535,3 +2535,156 @@ hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 23:56:11 [INFO] $ git rm --cached --ignore-unmatch .env
 23:56:11 [INFO] Добавление всех файлов в индекс (git add -A)...
 23:56:11 [INFO] $ git add -A
+23:56:11 [INFO] $ git status --porcelain
+23:56:11 [INFO] MM logs/app.log
+23:56:11 [INFO] Создание коммита...
+23:56:11 [INFO] Создание коммита...
+23:56:11 [INFO] $ git commit -m Initial commit
+23:56:11 [INFO] [main 83f1dc2] Initial commit
+ 1 file changed, 1756 insertions(+)
+23:56:11 [INFO] Переключение на ветку main...
+23:56:11 [INFO] Переключение на ветку main...
+23:56:11 [INFO] $ git branch -M main
+23:56:11 [INFO] Добавление удалённого репозитория origin...
+23:56:11 [INFO] Добавление удалённого репозитория origin...
+23:56:11 [INFO] $ git remote remove origin
+23:56:11 [INFO] $ git remote add origin https://github.com/qwexhausted21/PortfolioForge.git
+23:56:11 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:56:11 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:56:11 [INFO] $ git push -u origin main
+23:56:13 [INFO] To https://github.com/qwexhausted21/PortfolioForge.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/qwexhausted21/PortfolioForge.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+23:56:13 [INFO] ОШИБКА: Конфликт пуша — на GitHub есть новые изменения.
+23:56:13 [INFO] ОШИБКА: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:56:13 [INFO] Конфликт пуша: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:56:15 [INFO] === Начало публикации ===
+23:56:15 [INFO] Генерация README.md...
+23:56:15 [INFO] README.md сохранён: D:\program\PortfolioForge\README.md
+23:56:15 [INFO] $ git config --global --add safe.directory D:\program\PortfolioForge
+23:56:15 [INFO] Проверка токена GitHub...
+23:56:15 [INFO] Проверка токена GitHub...
+23:56:15 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:56:15 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:56:16 [INFO] Репозиторий 'qwexhausted21/PortfolioForge' уже найден.
+23:56:16 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+23:56:16 [INFO] Видимость репозитория обновлена: публичный
+23:56:16 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+23:56:16 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+23:56:16 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+23:56:16 [INFO] Инициализация локального репозитория Git (git init)...
+23:56:16 [INFO] Инициализация локального репозитория Git (git init)...
+23:56:16 [INFO] $ git init
+23:56:16 [INFO] Reinitialized existing Git repository in D:/program/PortfolioForge/.git/
+23:56:16 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:56:16 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:56:16 [INFO] $ git config user.name PortfolioForge
+23:56:17 [INFO] $ git config user.email portfolioforge@localhost
+23:56:17 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+23:56:17 [INFO] Исключение .env из отслеживания Git (защита токена)...
+23:56:17 [INFO] $ git rm --cached --ignore-unmatch .env
+23:56:17 [INFO] Добавление всех файлов в индекс (git add -A)...
+23:56:17 [INFO] $ git add -A
+23:56:17 [INFO] $ git status --porcelain
+23:56:17 [INFO] M  README.md
+MM logs/app.log
+23:56:17 [INFO] Создание коммита...
+23:56:17 [INFO] Создание коммита...
+23:56:17 [INFO] $ git commit -m Initial commit
+23:56:17 [INFO] [main 3de877f] Initial commit
+ 2 files changed, 46 insertions(+), 113 deletions(-)
+23:56:17 [INFO] Переключение на ветку main...
+23:56:17 [INFO] Переключение на ветку main...
+23:56:17 [INFO] $ git branch -M main
+23:56:17 [INFO] Добавление удалённого репозитория origin...
+23:56:17 [INFO] Добавление удалённого репозитория origin...
+23:56:17 [INFO] $ git remote remove origin
+23:56:18 [INFO] $ git remote add origin https://github.com/qwexhausted21/PortfolioForge.git
+23:56:18 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:56:18 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:56:18 [INFO] $ git push -u origin main
+23:56:19 [INFO] To https://github.com/qwexhausted21/PortfolioForge.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/qwexhausted21/PortfolioForge.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+23:56:19 [INFO] Конфликт пуша — выполняю force push (перезапись)...
+23:56:19 [INFO] $ git push -u origin main --force
+23:56:34 [INFO] branch 'main' set up to track 'origin/main'.
+23:56:34 [INFO] To https://github.com/qwexhausted21/PortfolioForge.git
+ + 0772ffb...3de877f main -> main (forced update)
+23:56:34 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+23:56:34 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+23:56:34 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+23:56:34 [INFO] Опубликовано: https://github.com/qwexhausted21/PortfolioForge
+23:56:34 [INFO] Критическая ошибка публикации: name 'progress' is not defined
+23:56:49 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+23:56:56 [INFO] === Начало публикации ===
+23:56:56 [INFO] Генерация README.md...
+23:56:56 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+23:56:56 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+23:56:56 [INFO] Проверка токена GitHub...
+23:56:56 [INFO] Проверка токена GitHub...
+23:56:57 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:56:57 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:56:58 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+23:56:58 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:56:58 [INFO] Видимость репозитория обновлена: приватный
+23:56:58 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:56:58 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:56:58 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+23:56:58 [INFO] Инициализация локального репозитория Git (git init)...
+23:56:58 [INFO] Инициализация локального репозитория Git (git init)...
+23:56:58 [INFO] $ git init
+23:56:58 [INFO] Reinitialized existing Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+23:56:58 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:56:58 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:56:58 [INFO] $ git config user.name PortfolioForge
+23:56:59 [INFO] $ git config user.email portfolioforge@localhost
+23:56:59 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+23:56:59 [INFO] Исключение .env из отслеживания Git (защита токена)...
+23:56:59 [INFO] $ git rm --cached --ignore-unmatch .env
+23:56:59 [INFO] Добавление всех файлов в индекс (git add -A)...
+23:56:59 [INFO] $ git add -A
+23:56:59 [INFO] warning: in the working copy of 'app/handlers/user.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/keyboards.py', LF will be replaced by CRLF the next time Git touches it
+23:56:59 [INFO] $ git status --porcelain
+23:56:59 [INFO] M  app/handlers/user.py
+M  app/keyboards.py
+23:56:59 [INFO] Создание коммита...
+23:56:59 [INFO] Создание коммита...
+23:56:59 [INFO] $ git commit -m Initial commit
+23:56:59 [INFO] [main 9dd8498] Initial commit
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+23:56:59 [INFO] Переключение на ветку main...
+23:56:59 [INFO] Переключение на ветку main...
+23:56:59 [INFO] $ git branch -M main
+23:57:00 [INFO] Добавление удалённого репозитория origin...
+23:57:00 [INFO] Добавление удалённого репозитория origin...
+23:57:00 [INFO] $ git remote remove origin
+23:57:00 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+23:57:00 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:57:00 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:57:00 [INFO] $ git push -u origin main
+23:57:03 [INFO] branch 'main' set up to track 'origin/main'.
+23:57:03 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+   02a0d18..9dd8498  main -> main
+23:57:03 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+23:57:03 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+23:57:03 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+23:57:03 [INFO] Опубликовано: https://github.com/qwexhausted21/medCourse-hub-bot
+23:57:03 [INFO] Репозиторий добавлен в список сохранённых.
+00:09:15 [INFO] === Начало публикации ===
+00:09:15 [INFO] Генерация README.md...
+00:09:15 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+00:09:15 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+00:09:16 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+00:09:16 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
