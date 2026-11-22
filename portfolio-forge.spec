@@ -10,6 +10,7 @@ datas = [
     (os.path.join(BASE, "templates"), "templates"),
     (os.path.join(BASE, "static"), "static"),
     (os.path.join(BASE, ".env.example"), "."),
+    (os.path.join(BASE, "icon.png"), "."),
 ]
 
 hiddenimports = [
@@ -74,7 +75,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="PortfolioForge-v0.5.0-beta",
+    name="PortfolioForge-v0.5.1-beta",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -82,7 +83,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,  # без консольного окна
-    icon=None,
+    icon=os.path.join(BASE, "icon.png"),
     version_file=None,
     manifest=None,
 )
@@ -95,5 +96,5 @@ app = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="PortfolioForge-v0.5.0-beta",
+    name="PortfolioForge-v0.5.1-beta",
 )

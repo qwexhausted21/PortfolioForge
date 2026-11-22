@@ -545,7 +545,7 @@ class GitHubManager:
         try:
             repo = _safe_github_call(self.github.get_repo, full_name)
             release = _safe_github_call(repo.get_release, tag)
-            _safe_github_call(release.update_release, name=release.title or tag, body=body)
+            _safe_github_call(release.edit, body=body)
             logger.info(f"Описание релиза '{tag}' обновлено в {full_name}.")
             return True, f"ChangeLog релиза '{tag}' обновлён."
         except GithubException as exc:

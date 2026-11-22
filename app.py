@@ -26,7 +26,6 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from github_manager import GitHubManager, GitPushConflictError, _safe_github_call
 from readme_generator import generate_readme, generate_readme_content, load_existing_readme
@@ -57,8 +56,6 @@ publish_cancel_event: threading.Event | None = None
 app = FastAPI(title=APP_TITLE)
 
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-
 logger = logging.getLogger("portfolioforge")
 logger.setLevel(logging.INFO)
 
@@ -206,9 +203,9 @@ async def _startup() -> None:
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> HTMLResponse:
     """Отдаёт главную страницу UI."""
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "title": APP_TITLE}
-    )
+    html_path = BASE_DIR / "templates" / "index.html"
+    content = html_path.read_text(encoding="utf-8")
+    return HTMLResponse(content=content)
 
 
 @app.post("/select-folder")
@@ -488,20 +485,13 @@ async def get_repo_details(name: str) -> JSONResponse:
     return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
 
 
-@app.get("/repos/{name}/tags")
-async def list_tags(name: str) -> JSONResponse:
-    """Возвращает список тегов репозитория из библиотеки."""
+@app.get("/repos/tags")
+async def list_tags(full_name: str) -> JSONResponse:
+    """Возвращает список тегов репозитория по полному имени (owner/repo)."""
     try:
-        repos = _load_repos()
-        target = None
-        for repo in repos:
-            if repo.get("name") == name or repo.get("full_name") == name:
-                target = repo
-                break
-        if not target:
-            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+        if not full_name or "/" not in full_name:
+            return JSONResponse({"tags": [], "error": "Укажите полное имя репозитория (owner/repo)"}, status_code=400)
 
-        full_name = target.get("full_name") or target.get("name") or name
         manager = GitHubManager(env_path=ENV_PATH)
         if not manager.github or not manager.token:
             return JSONResponse({"tags": [], "error": "Токен не задан"}, status_code=400)
@@ -514,20 +504,13 @@ async def list_tags(name: str) -> JSONResponse:
         return JSONResponse({"tags": [], "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
 
 
-@app.get("/repos/{name}/releases/{tag}")
-async def get_release_info(name: str, tag: str) -> JSONResponse:
-    """Возвращает информацию о релизе по тегу."""
+@app.get("/repos/releases/{tag}")
+async def get_release_info(tag: str, full_name: str) -> JSONResponse:
+    """Возвращает информацию о релизе по тегу и полному имени репозитория."""
     try:
-        repos = _load_repos()
-        target = None
-        for repo in repos:
-            if repo.get("name") == name or repo.get("full_name") == name:
-                target = repo
-                break
-        if not target:
-            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+        if not full_name or "/" not in full_name:
+            return JSONResponse({"ok": False, "error": "Укажите полное имя репозитория (owner/repo)"}, status_code=400)
 
-        full_name = target.get("full_name") or target.get("name") or name
         manager = GitHubManager(env_path=ENV_PATH)
         if not manager.github or not manager.token:
             return JSONResponse({"ok": False, "error": "Токен не задан"}, status_code=400)
@@ -540,20 +523,13 @@ async def get_release_info(name: str, tag: str) -> JSONResponse:
         return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
 
 
-@app.post("/repos/{name}/releases/{tag}/body")
-async def update_release_body(name: str, tag: str, request: Request) -> JSONResponse:
+@app.post("/repos/releases/{tag}/body")
+async def update_release_body(tag: str, full_name: str, request: Request) -> JSONResponse:
     """Обновляет ChangeLog (описание) существующего релиза."""
     try:
-        repos = _load_repos()
-        target = None
-        for repo in repos:
-            if repo.get("name") == name or repo.get("full_name") == name:
-                target = repo
-                break
-        if not target:
-            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+        if not full_name or "/" not in full_name:
+            return JSONResponse({"ok": False, "error": "Укажите полное имя репозитория (owner/repo)"}, status_code=400)
 
-        full_name = target.get("full_name") or target.get("name") or name
         data: dict[str, Any] = await request.json()
         body = data.get("body", "")
 
@@ -569,20 +545,12 @@ async def update_release_body(name: str, tag: str, request: Request) -> JSONResp
         return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
 
 
-@app.post("/repos/{name}/releases/{tag}/assets")
-async def upload_release_asset(name: str, tag: str, request: Request) -> JSONResponse:
+@app.post("/repos/releases/{tag}/assets")
+async def upload_release_asset(tag: str, full_name: str, request: Request) -> JSONResponse:
     """Загружает файл (asset) на существующий релиз."""
     try:
-        repos = _load_repos()
-        target = None
-        for repo in repos:
-            if repo.get("name") == name or repo.get("full_name") == name:
-                target = repo
-                break
-        if not target:
-            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
-
-        full_name = target.get("full_name") or target.get("name") or name
+        if not full_name or "/" not in full_name:
+            return JSONResponse({"ok": False, "error": "Укажите полное имя репозитория (owner/repo)"}, status_code=400)
 
         form = await request.form()
         upload_file = form.get("file")
@@ -610,6 +578,36 @@ async def upload_release_asset(name: str, tag: str, request: Request) -> JSONRes
             return JSONResponse({"ok": True, "message": msg})
         finally:
             Path(tmp_path).unlink(missing_ok=True)
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
+
+
+@app.post("/repos/releases/{tag}")
+async def create_release(tag: str, full_name: str, request: Request) -> JSONResponse:
+    """Создаёт тег и релиз на GitHub."""
+    try:
+        if not full_name or "/" not in full_name:
+            return JSONResponse({"ok": False, "error": "Укажите полное имя репозитория (owner/repo)"}, status_code=400)
+
+        data: dict[str, Any] = await request.json()
+        tag_name = data.get("tag_name") or tag
+        body = data.get("body", "")
+
+        if not TAG_NAME_RE.fullmatch(tag_name):
+            return JSONResponse(
+                {"ok": False, "error": "Некорректный тег. Разрешены латинские буквы, цифры, точки, дефисы и подчёркивания."},
+                status_code=400,
+            )
+
+        manager = GitHubManager(env_path=ENV_PATH)
+        if not manager.github or not manager.token:
+            return JSONResponse({"ok": False, "error": "Токен не задан"}, status_code=400)
+
+        manager.last_repo_full_name = full_name
+        ok, msg = manager.create_release(tag_name, body)
+        if not ok:
+            return JSONResponse({"ok": False, "error": msg}, status_code=500)
+        return JSONResponse({"ok": True, "message": msg})
     except Exception as exc:  # noqa: BLE001
         return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
 
@@ -757,9 +755,7 @@ async def publish(request: Request) -> JSONResponse:
     private = bool(data.get("private"))
     readme_content_override = data.get("readme_content")
     branch = (data.get("branch") or "main").strip() or "main"
-    create_release = bool(data.get("create_release"))
     force_push = bool(data.get("force_push"))
-    tag = (data.get("tag") or "v0.1.0").strip() or "v0.1.0"
 
     if not project_name or not folder_path:
         return JSONResponse(
@@ -778,14 +774,6 @@ async def publish(request: Request) -> JSONResponse:
         return JSONResponse(
             {
                 "error": "Некорректное имя ветки. Разрешены латинские буквы, цифры, точки, дефисы, подчёркивания и слэши."
-            },
-            status_code=400,
-        )
-
-    if create_release and not TAG_NAME_RE.fullmatch(tag):
-        return JSONResponse(
-            {
-                "error": "Некорректный тег. Разрешены латинские буквы, цифры, точки, дефисы и подчёркивания."
             },
             status_code=400,
         )
@@ -853,18 +841,6 @@ async def publish(request: Request) -> JSONResponse:
             global last_published_repo_url
             last_published_repo_url = manager.last_repo_url
             log_info(f"Опубликовано: {manager.last_repo_url}")
-
-            # Создать тег и релиз, если запрошено
-            if create_release:
-                progress(95, "Создание тега и релиза...")
-                try:
-                    ok, msg = manager.create_release(tag, description, manager.last_repo_url)
-                    if ok:
-                        log_info(f"Релиз создан: {msg}")
-                    else:
-                        log_info(f"Не удалось создать релиз: {msg}")
-                except Exception as exc:  # noqa: BLE001
-                    log_info(f"Ошибка создания релиза: {exc}")
 
             # Сохраняем репозиторий в список, если публикация прошла успешно
             try:

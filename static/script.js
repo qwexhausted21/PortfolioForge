@@ -13,6 +13,7 @@
   let publishing = false;
   let libraryRequest = 0;
 let pendingPublishData = null;
+	let publishedRepoFullName = null;
 
   async function api(url, options) {
     const response = await fetch(url, options);
@@ -72,7 +73,14 @@ let pendingPublishData = null;
         if (frame.percent >= 100) {
           message("publishMessage", "Проект опубликован на GitHub.", "ok");
           finishPublishing();
-          api("/last-published").then(({ url }) => { showRepoLink(url); }).catch(() => {});
+          api("/last-published").then(({ url }) => {
+            showRepoLink(url);
+            try {
+              const u = new URL(url);
+              publishedRepoFullName = u.pathname.slice(1);
+              $("createReleaseBtn").hidden = false;
+            } catch { }
+          }).catch(() => {});
         }
       }
       if (frame.type === "push_conflict") {
@@ -85,8 +93,6 @@ let pendingPublishData = null;
           update_if_exists: $("updateExisting").checked,
           private: $("publishForm").repoVisibility.value === "private",
           branch: $("repoBranch").value.trim() || "main",
-          create_release: $("createRelease").checked,
-          tag: $("repoTag").value.trim() || "v0.1.0",
         };
         publishing = false;
         cancelBtn.hidden = true;
@@ -127,7 +133,7 @@ let pendingPublishData = null;
 
   function projectData() {
     const [project_name, description, tech_stack, demo_link] = projectFields.map((id) => $(id).value.trim());
-    return { project_name, description, tech_stack, demo_link, branch: $("repoBranch").value.trim() || "main", private: $("publishForm").repoVisibility.value === "private", createRelease: $("createRelease").checked, tag: $("repoTag").value.trim() || "v0.1.0" };
+    return { project_name, description, tech_stack, demo_link, branch: $("repoBranch").value.trim() || "main", private: $("publishForm").repoVisibility.value === "private" };
   }
 
   function validProject() {
@@ -383,11 +389,6 @@ let pendingPublishData = null;
     if ($("tabPreview").classList.contains("active")) renderPreview($("readmeEditor").value);
   });
 
-  const releaseCheckbox = $("createRelease");
-  const releaseVersion = $("repoTag").closest(".release-version");
-  releaseCheckbox.addEventListener("change", () => {
-    releaseVersion.hidden = !releaseCheckbox.checked;
-  });
   activate("selectFolderBtn", selectFolder);
   $("publishForm").addEventListener("submit", publish);
   activate("clearLogsBtn", () => $("logsContainer").replaceChildren());
@@ -473,7 +474,7 @@ let pendingPublishData = null;
     const list = $("releaseTagsList");
     list.replaceChildren();
     try {
-      const { tags, error } = await api(`/repos/${encodeURIComponent(currentReleaseRepo)}/tags`);
+      const { tags, error } = await api(`/repos/tags?full_name=${encodeURIComponent(currentReleaseRepo)}`);
       if (error) {
         message("releaseTagsResult", error, "error");
         return;
@@ -512,7 +513,7 @@ let pendingPublishData = null;
     $("releaseTabChangelog").classList.add("active");
     $("releaseTabAssets").classList.remove("active");
     try {
-      const { release, error } = await api(`/repos/${encodeURIComponent(currentReleaseRepo)}/releases/${encodeURIComponent(tag)}`);
+      const { release, error } = await api(`/repos/releases/${encodeURIComponent(tag)}?full_name=${encodeURIComponent(currentReleaseRepo)}`);
       if (error) {
         message("releaseChangelogResult", error, "error");
         $("releaseChangelogEditor").value = "";
@@ -541,7 +542,7 @@ let pendingPublishData = null;
     const list = $("releaseAssetsList");
     list.replaceChildren();
     try {
-      const { release, error } = await api(`/repos/${encodeURIComponent(currentReleaseRepo)}/releases/${encodeURIComponent(tag)}`);
+      const { release, error } = await api(`/repos/releases/${encodeURIComponent(tag)}?full_name=${encodeURIComponent(currentReleaseRepo)}`);
       if (error) {
         message("releaseAssetsResult", error, "error");
         return;
@@ -584,7 +585,7 @@ let pendingPublishData = null;
     btn.disabled = true;
     btn.textContent = "Сохраняем…";
     try {
-      await api(`/repos/${encodeURIComponent(currentReleaseRepo)}/releases/${encodeURIComponent(tag)}/body`, {
+      await api(`/repos/releases/${encodeURIComponent(tag)}/body?full_name=${encodeURIComponent(currentReleaseRepo)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body: editor.value }),
@@ -614,7 +615,7 @@ let pendingPublishData = null;
       const form = new FormData();
       form.append("file", file);
       if (assetName) form.append("asset_name", assetName);
-      await api(`/repos/${encodeURIComponent(currentReleaseRepo)}/releases/${encodeURIComponent(currentReleaseTag)}/assets`, {
+      await api(`/repos/releases/${encodeURIComponent(currentReleaseTag)}/assets?full_name=${encodeURIComponent(currentReleaseRepo)}`, {
         method: "POST",
         body: form,
       });
@@ -686,6 +687,43 @@ let pendingPublishData = null;
     }
   }
 
+  async function openCreateReleaseModal() {
+    if (!publishedRepoFullName) {
+      message("createReleaseResult", "Репозиторий не опубликован.", "error");
+      return;
+    }
+    $("createReleaseTag").value = "v0.1.0";
+    $("createReleaseBody").value = "";
+    $("createReleaseResult").hidden = true;
+    $("createReleaseModal").showModal();
+  }
+
+  async function confirmCreateRelease() {
+    const tag = $("createReleaseTag").value.trim();
+    const body = $("createReleaseBody").value.trim();
+    if (!tag) {
+      message("createReleaseResult", "Укажите имя тега.", "error");
+      return;
+    }
+    const btn = $("createReleaseConfirmBtn");
+    btn.disabled = true;
+    btn.textContent = "Создаём…";
+    try {
+      await api(`/repos/releases/${encodeURIComponent(tag)}?full_name=${encodeURIComponent(publishedRepoFullName)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tag_name: tag, body }),
+      });
+      message("createReleaseResult", `Релиз ${tag} создан.`, "ok");
+      $("createReleaseModal").close();
+    } catch (error) {
+      message("createReleaseResult", error.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Создать релиз";
+    }
+  }
+
   function initTheme() {
     const saved = localStorage.getItem("portfolioforge-theme");
     const dark = saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -736,6 +774,9 @@ let pendingPublishData = null;
 
   $("pushConflictMergeBtn").addEventListener("click", () => resolvePushConflict("merge"));
   $("pushConflictForceBtn").addEventListener("click", () => resolvePushConflict("force"));
+  $("createReleaseBtn").addEventListener("click", openCreateReleaseModal);
+  $("createReleaseConfirmBtn").addEventListener("click", confirmCreateRelease);
+  $("createReleaseCancelBtn").addEventListener("click", () => $("createReleaseModal").close());
 
   initTheme();
   restoreLastFolder();

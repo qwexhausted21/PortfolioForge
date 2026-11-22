@@ -79,15 +79,7 @@ textarea { resize: vertical; }
 .update small { display: block; color: var(--muted); font-size: 12px; }
 .branch-field { margin-top: 12px; }
 .branch-field label { display: block; margin: 11px 0 4px; font-size: 13px; font-weight: 650; }
-.release-field { margin-top: 12px; padding: 12px; border: 1px dashed var(--line); border-radius: 8px; background: var(--lavender); }
-.release-checkbox { display: flex; align-items: start; gap: 7px; margin: 0 0 8px 0; font-size: 13px; font-weight: 650; cursor: pointer; }
-.release-checkbox input { margin-top: 2px; }
-.release-version { display: none; gap: 8px; align-items: center; margin-top: 6px; }
-.release-checkbox input:checked ~ .release-version,
-.release-checkbox:has(input:checked) ~ .release-version { display: flex; }
-.release-version label { font-size: 13px; font-weight: 650; white-space: nowrap; }
-.release-version button { margin-left: 8px; }
-[data-theme="dark"] .release-field { background: var(--white); border-color: var(--line); }
+.release-field { margin-top: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .readme-row { margin-top: 15px; padding-block: 12px; border-block: 1px solid var(--line); }
 #publishBtn { width: 100%; margin-top: 15px; min-height: 44px; font-size: 14px; }
 .message { margin-top: 10px; overflow-wrap: anywhere; padding: 8px 10px; border-radius: 6px; font-size: 13px; background: var(--lavender); }
