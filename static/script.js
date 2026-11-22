@@ -66,7 +66,14 @@
     socket.onmessage = ({ data }) => {
       const frame = JSON.parse(data);
       if (frame.type === "log") addLog(frame.message);
-      if (frame.type === "progress" && publishing) progress(frame.percent, frame.message);
+      if (frame.type === "progress" && publishing) {
+        progress(frame.percent, frame.message);
+        if (frame.percent >= 100) {
+          message("publishMessage", "Проект опубликован на GitHub.", "ok");
+          finishPublishing();
+          api("/last-published").then(({ url }) => { showRepoLink(url); }).catch(() => {});
+        }
+      }
     };
     socket.onclose = () => {
       status.dataset.state = "error";
@@ -134,22 +141,24 @@
     publishBtn.lastElementChild.textContent = "Публикуем…";
     $("publishSpinner").hidden = false;
     try {
-      const { url } = await post("/publish", {
+      await post("/publish", {
         ...projectData(), folder_path: folder,
         update_if_exists: $("updateExisting").checked, readme_content: readme,
       });
-      message("publishMessage", "Проект опубликован на GitHub.", "ok");
-      showRepoLink(url);
+      // Успех покажем по прогрессу 100% через WebSocket, а не сразу.
     } catch (error) {
       message("publishMessage", error.message, "error");
-    } finally {
-      publishing = false;
-      cancelBtn.hidden = true;
-      $("publishSpinner").hidden = true;
-      $("progressSection").hidden = true;
-      publishBtn.lastElementChild.textContent = "Опубликовать на GitHub";
-      working(false);
+      finishPublishing();
     }
+  }
+
+  function finishPublishing() {
+    publishing = false;
+    cancelBtn.hidden = true;
+    $("publishSpinner").hidden = true;
+    $("progressSection").hidden = true;
+    publishBtn.lastElementChild.textContent = "Опубликовать на GitHub";
+    working(false);
   }
 
   cancelBtn.addEventListener("click", async () => {
