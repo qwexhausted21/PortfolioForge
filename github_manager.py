@@ -9,9 +9,12 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 import os
+import re
 import subprocess
+import threading
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -30,6 +33,11 @@ class GitPushConflictError(Exception):
     """Исключение при конфликте пуша — на удалённом репозитории есть изменения,
     которых нет локально. Требует решения пользователем: слить или перезаписать."""
     pass
+
+
+# Таймаут на любую git-команду (сек). 5 минут достаточно для инициализации,
+# коммита и большинства пушей; длительный пуш по медленному каналу прервётся.
+GIT_TIMEOUT_SECONDS = 300
 
 
 def _safe_github_call(fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
@@ -118,6 +126,7 @@ class GitHubManager:
         update_if_exists: bool = False,
         private: bool = False,
         progress_callback: Callable[[int, str], None] | None = None,
+        cancel_event: Event | None = None,
     ) -> List[str]:
         """Создаёт репозиторий на GitHub и пушит в него код из папки.
 
@@ -133,6 +142,7 @@ class GitHubManager:
             update_if_exists: Разрешить апдейт существующего репозитория.
             private: Приватный репозиторий (True) или публичный (False).
             progress_callback: Функция обратного вызова для прогресса (процент, сообщение).
+            cancel_event: Событие отмены — если установлено, публикация прерывается.
 
         Returns:
             Список строк-лога с пошаговым описанием действий и ошибок.
@@ -147,6 +157,18 @@ class GitHubManager:
             log(message)
             if progress_callback:
                 progress_callback(percent, message)
+
+        def is_cancelled() -> bool:
+            return cancel_event is not None and cancel_event.is_set()
+
+        def check_cancelled() -> None:
+            if is_cancelled():
+                log("Публикация отменена пользователем.")
+                raise _PublishCancelledError()
+
+        class _PublishCancelledError(Exception):
+            """Внутренний маркер отмены публикации пользователем."""
+            pass
 
         try:
             if not self.token:
@@ -170,6 +192,7 @@ class GitHubManager:
             except RateLimitExceededException as exc:
                 raise RuntimeError(f"Лимит запросов GitHub API исчерпан: {exc}")
             progress(10, f"Токен валиден. Пользователь: {user.login}")
+            check_cancelled()
 
             # Санитизируем имя репозитория для GitHub API (только ASCII,
             # иначе PyGithub падает с UnicodeEncodeError на латине-1)
@@ -220,19 +243,20 @@ class GitHubManager:
                     log(f"Не удалось обновить видимость: {exc}")
                 progress(40, f"Используется существующий репозиторий: {repo.html_url}")
 
+            check_cancelled()
+
             clone_url = repo.clone_url  # https://github.com/владелец/имя.git
 
             # --- Локальный Git ---
-            # Удаляем старый .git, если есть — иначе токен из прошлых коммитов
-            # попадёт в новую историю и GitHub заблокирует пуш через Secret Scanning.
+            # Не удаляем существующий .git, чтобы не zerstörить локальную историю.
+            # git init в существующем репозитории безопасен и идемпотентен.
             old_git = folder / ".git"
             if old_git.exists():
-                log("Удаление старого локального репозитория Git (.git)...")
-                import shutil
-                shutil.rmtree(old_git, ignore_errors=True)
+                log("Локальный репозиторий Git (.git) уже существует — используем его.")
 
             progress(50, "Инициализация локального репозитория Git (git init)...")
             self._run_git(folder, ["init"], log)
+            check_cancelled()
 
             progress(55, "Настройка локальной идентичности Git (user.name / user.email)...")
             self._run_git(
@@ -263,10 +287,7 @@ class GitHubManager:
             )
             (folder / ".gitignore").write_text(gitignore_content, encoding="utf-8")
 
-            log("Добавление всех файлов в индекс (git add -A)...")
-            self._run_git(folder, ["add", "-A"], log)
-
-            # Гарантированно исключаем .env из индекса, даже если он был добавлен ранее
+            # Гарантированно исключаем .env из отслеживания Git ДО добавления файлов (защита токена)
             log("Исключение .env из отслеживания Git (защита токена)...")
             self._run_git(
                 folder,
@@ -274,6 +295,11 @@ class GitHubManager:
                 log,
                 check=False,
             )
+
+            check_cancelled()
+
+            log("Добавление всех файлов в индекс (git add -A)...")
+            self._run_git(folder, ["add", "-A"], log)
 
             # Проверяем, есть ли что коммитить
             status_result = self._run_git(folder, ["status", "--porcelain"], log, check=False)
@@ -293,6 +319,8 @@ class GitHubManager:
             progress(80, "Добавление удалённого репозитория origin...")
             self._run_git(folder, ["remote", "remove", "origin"], log, check=False)
             self._run_git(folder, ["remote", "add", "origin", clone_url], log)
+
+            check_cancelled()
 
             progress(90, "Отправка кода на GitHub (git push -u origin main)...")
             try:
@@ -321,98 +349,8 @@ class GitHubManager:
             self.last_repo_url = repo.html_url
             return logs
 
-        except Exception as exc:  # noqa: BLE001 — любая ошибка сети/API попадает в лог
-            log(f"ОШИБКА: {exc}")
-            raise
-
-            clone_url = repo.clone_url  # https://github.com/владелец/имя.git
-
-            # --- Локальный Git ---
-            # Удаляем старый .git, если есть — иначе токен из прошлых коммитов
-            # попадёт в новую историю и GitHub заблокирует пуш через Secret Scanning.
-            old_git = folder / ".git"
-            if old_git.exists():
-                log("Удаление старого локального репозитория Git (.git)...")
-                import shutil
-                shutil.rmtree(old_git, ignore_errors=True)
-
-            log("Инициализация локального репозитория Git (git init)...")
-            self._run_git(folder, ["init"], log)
-
-            log("Настройка локальной идентичности Git (user.name / user.email)...")
-            self._run_git(
-                folder,
-                ["config", "user.name", "PortfolioForge"],
-                log,
-            )
-            self._run_git(
-                folder,
-                ["config", "user.email", "portfolioforge@localhost"],
-                log,
-            )
-
-            log("Создание .gitignore (исключаем .env, venv, кэш)...")
-            gitignore_content = (
-                "# Environment variables (содержит GITHUB_TOKEN — не коммитить)\n"
-                ".env\n"
-                "# Виртуальное окружение\n"
-                "venv/\n"
-                ".venv/\n"
-                "# Python кэш\n"
-                "__pycache__/\n"
-                "*.py[cod]\n"
-                "$py.cache/\n"
-                "# OS\n"
-                ".DS_Store\n"
-                "Thumbs.db\n"
-            )
-            (folder / ".gitignore").write_text(gitignore_content, encoding="utf-8")
-
-            log("Добавление всех файлов в индекс (git add -A)...")
-            self._run_git(folder, ["add", "-A"], log)
-
-            # Гарантированно исключаем .env из индекса, даже если он был добавлен ранее
-            log("Исключение .env из отслеживания Git (защита токена)...")
-            self._run_git(
-                folder,
-                ["rm", "--cached", "--ignore-unmatch", ".env"],
-                log,
-                check=False,
-            )
-
-            # Проверяем, есть ли что коммитить
-            status_result = self._run_git(folder, ["status", "--porcelain"], log, check=False)
-            if not status_result.stdout.strip():
-                log("Нет изменений для коммита — пропускаю создание коммита.")
-            else:
-                log("Создание коммита...")
-                try:
-                    self._run_git(folder, ["commit", "-m", "Initial commit"], log)
-                except subprocess.CalledProcessError:
-                    # Возможно, коммит уже был — пробуем продолжить пуш
-                    log("Коммит не создан (возможно, уже существует). Продолжаю...")
-
-            log("Переключение на главную ветку main...")
-            self._run_git(folder, ["branch", "-M", "main"], log)
-
-            log("Добавление удалённого репозитория origin...")
-            self._run_git(folder, ["remote", "remove", "origin"], log, check=False)
-            self._run_git(folder, ["remote", "add", "origin", clone_url], log)
-
-            log("Отправка кода на GitHub (git push -u origin main)...")
-            try:
-                self._run_git(folder, ["push", "-u", "origin", "main"], log)
-            except subprocess.CalledProcessError:
-                # При апдейте существующего репозитория push может быть не fast-forward.
-                # Пробуем force push только если включён режим апдейта.
-                if update_if_exists:
-                    log("Обычный push не прошёл. Пробую force push (режим апдейта)...")
-                    self._run_git(folder, ["push", "-u", "origin", "main", "--force"], log)
-                else:
-                    raise
-
-            log(f"Готово! Проект опубликован: {repo.html_url}")
-            self.last_repo_url = repo.html_url
+        except _PublishCancelledError:
+            log("Публикация отменена пользователем.")
             return logs
 
         except Exception as exc:  # noqa: BLE001 — любая ошибка сети/API попадает в лог
@@ -426,8 +364,13 @@ class GitHubManager:
         log,
         *,
         check: bool = True,
+        timeout: float = GIT_TIMEOUT_SECONDS,
     ) -> subprocess.CompletedProcess:
-        """Выполняет git-команду в папке проекта и логирует её вывод."""
+        """Выполняет git-команду в папке проекта и логирует её вывод.
+
+        При превышении таймаута команда прерывается и логируется как ошибка,
+        чтобы приложение не висело бесконечно (например, на git push без сети).
+        """
         cmd = ["git"] + args
         log(f"$ {' '.join(cmd)}")
         try:
@@ -437,12 +380,20 @@ class GitHubManager:
                 capture_output=True,
                 text=True,
                 check=check,
+                timeout=timeout,
             )
             if result.stdout.strip():
                 log(result.stdout.strip())
             if result.stderr.strip():
                 log(result.stderr.strip())
             return result
+        except subprocess.TimeoutExpired as exc:
+            log(f"Таймаут git-команды ({timeout}с): {' '.join(cmd)}")
+            if exc.stdout:
+                log(exc.stdout.strip())
+            if exc.stderr:
+                log(exc.stderr.strip())
+            raise
         except subprocess.CalledProcessError as exc:
             if exc.stdout:
                 log(exc.stdout.strip())

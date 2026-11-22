@@ -1,0 +1,54 @@
+20:10:18 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+20:10:30 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:12:29 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:13:45 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:15:17 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+22:15:19 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+22:15:23 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:16:36 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+05:22:33 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+20:12:23 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+20:14:26 [INFO] === Начало публикации ===
+20:14:26 [INFO] Генерация README.md...
+20:14:26 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+20:14:27 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+20:16:12 [INFO] === Начало публикации ===
+20:16:12 [INFO] Генерация README.md...
+20:16:12 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+20:16:12 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:16:13 [INFO] === Начало публикации ===
+21:16:13 [INFO] Генерация README.md...
+21:16:13 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:16:13 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:16:25 [INFO] === Начало публикации ===
+21:16:25 [INFO] Генерация README.md...
+21:16:25 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:16:25 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:16:25 [INFO] Пользователь запросил отмену публикации.
+21:16:41 [INFO] === Начало публикации ===
+21:16:41 [INFO] Генерация README.md...
+21:16:41 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:16:41 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:18:05 [INFO] === Начало публикации ===
+21:18:05 [INFO] Генерация README.md...
+21:18:05 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:18:05 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:18:22 [INFO] === Начало публикации ===
+21:18:22 [INFO] Генерация README.md...
+21:18:22 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:18:23 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:19:39 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+21:19:46 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+21:20:09 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:20:28 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+21:20:47 [INFO] Попытка выбрать папку вне домашней директории: D:/program/PortfolioForge
+21:23:33 [INFO] === Начало публикации ===
+21:23:33 [INFO] Генерация README.md...
+21:23:33 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:23:33 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:24:29 [INFO] Выбрана папка: D:/program/PortfolioForge
+21:24:35 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+21:26:59 [INFO] === Начало публикации ===
+21:26:59 [INFO] Генерация README.md...
+21:26:59 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+21:26:59 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.

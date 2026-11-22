@@ -1,4 +1,0 @@
-Проверка: слияние с [PERSON_NAME], [ADDRESS].
-Вторая [PERSON_NAME]: [ADDRESS] локальные [ADDRESS] перед [ADDRESS].
-Третья [ADDRESS]: логи, [ADDRESS], [PERSON_NAME], пути.
-Четвёртая: удалённый [PERSON_NAME], [PERSON_NAME], файл в [ADDRESS].

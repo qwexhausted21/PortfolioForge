@@ -1,838 +1,409 @@
-// PortfolioForge — клиентская логика UI (Vanilla JS)
-
 (() => {
   "use strict";
 
-  const BASE = window.location.origin;
+  const $ = (id) => document.getElementById(id);
+  const activate = (id, callback) => $(id).addEventListener("click", callback);
+  const projectFields = ["projectName", "description", "techStack", "demoLink"];
+  const publishBtn = $("publishBtn");
+  const cancelBtn = $("cancelPublishBtn");
+  const themeBtn = $("toggleThemeBtn");
+  const busyButtons = [publishBtn, $("selectFolderBtn"), $("toggleReadmeEditorBtn"), $("openLibraryBtn"), themeBtn];
+  let folder = "";
+  let readme = null;
+  let publishing = false;
+  let libraryRequest = 0;
 
-  const els = {
-    projectName: document.getElementById("projectName"),
-    description: document.getElementById("description"),
-    techStack: document.getElementById("techStack"),
-    demoLink: document.getElementById("demoLink"),
-    folderPath: document.getElementById("folderPath"),
-    selectFolderBtn: document.getElementById("selectFolderBtn"),
-    publishBtn: document.getElementById("publishBtn"),
-    updateExisting: document.getElementById("updateExisting"),
-    logsContainer: document.getElementById("logsContainer"),
-    clearLogsBtn: document.getElementById("clearLogsBtn"),
-    wsStatus: document.getElementById("wsStatus"),
-    wsStatusText: document.querySelector("#wsStatus + span"),
-    publishForm: document.getElementById("publishForm"),
-    goToRepoBtn: document.getElementById("goToRepoBtn"),
-    savedReposList: document.getElementById("libraryReposList"),
-
-    // Редактор README (модал)
-    toggleReadmeEditorBtn: document.getElementById("toggleReadmeEditorBtn"),
-    readmeModal: document.getElementById("readmeModal"),
-    readmeModalBackdrop: document.getElementById("readmeModalBackdrop"),
-    closeReadmeModalBtn: document.getElementById("closeReadmeModalBtn"),
-    readmeEditor: document.getElementById("readmeEditor"),
-    saveReadmeBtn: document.getElementById("saveReadmeBtn"),
-    readmeEditorVisible: false,
-    readmeManualContent: null,
-
-    // Прогресс-бар
-    progressSection: document.getElementById("progressSection"),
-    progressBar: document.getElementById("progressBar"),
-    progressPercent: document.getElementById("progressPercent"),
-    progressLabel: document.getElementById("progressLabel"),
-
-    // Логи
-    toggleLogsBtn: document.getElementById("toggleLogsBtn"),
-    logsContainer: document.getElementById("logsContainer"),
-
-    // Библиотека (drawer)
-    openLibraryBtn: document.getElementById("openLibraryBtn"),
-    libraryDrawer: document.getElementById("libraryDrawer"),
-    libraryBackdrop: document.getElementById("libraryBackdrop"),
-    closeLibraryBtn: document.getElementById("closeLibraryBtn"),
-    loadUserReposBtn: document.getElementById("loadUserReposBtn"),
-    showManualAddBtn: document.getElementById("showManualAddBtn"),
-    manualAddForm: document.getElementById("manualAddForm"),
-    manualRepoUrl: document.getElementById("manualRepoUrl"),
-    addManualRepoBtn: document.getElementById("addManualRepoBtn"),
-
-    // Токен-модал
-    tokenModal: document.getElementById("tokenModal"),
-    tokenModalBackdrop: document.getElementById("tokenModalBackdrop"),
-    openTokenModalBtn: document.getElementById("openTokenModalBtn"),
-    closeTokenModalBtn: document.getElementById("closeTokenModalBtn"),
-    tokenInput: document.getElementById("tokenInput"),
-    validateTokenBtn: document.getElementById("validateTokenBtn"),
-    saveTokenBtn: document.getElementById("saveTokenBtn"),
-    tokenResult: document.getElementById("tokenResult"),
-    tokenStatus: document.getElementById("tokenStatus"),
-    tokenStatusDot: document.getElementById("tokenStatusDot"),
-    tokenStatusText: document.getElementById("tokenStatusText"),
-
-    // Диалог конфликта пуша
-    pushConflictModal: document.getElementById("pushConflictModal"),
-    pushConflictBackdrop: document.getElementById("pushConflictBackdrop"),
-    pushMergeBtn: document.getElementById("pushMergeBtn"),
-    pushForceBtn: document.getElementById("pushForceBtn"),
-    pendingPush: null,
-  };
-
-  let ws = null;
-
-  /* ---------- Логи ---------- */
-
-  function appendLog(text, level = "info") {
-    const now = new Date().toLocaleTimeString("ru-RU", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-
-    const div = document.createElement("div");
-    div.className = "log-line";
-
-    let colorClass = "text-gray-400";
-    const upper = String(text).toUpperCase();
-    if (upper.includes("ОШИБКА") || upper.includes("ERROR") || upper.includes("FAILED")) {
-      colorClass = "text-red-400";
-    } else if (
-      upper.includes("ГОТОВО") ||
-      upper.includes("ОПУБЛИКОВАН") ||
-      upper.includes("СОЗДАН")
-    ) {
-      colorClass = "text-emerald-400";
-    } else if (String(text).startsWith("$")) {
-      colorClass = "text-cyan-200/80";
-    } else if (level === "warn") {
-      colorClass = "text-yellow-400";
-    }
-
-    div.className = `log-line ${colorClass} text-sm font-mono leading-relaxed`;
-    div.textContent = `[${now}] ${text}`;
-
-    els.logsContainer.appendChild(div);
-    els.logsContainer.scrollTop = els.logsContainer.scrollHeight;
+  async function api(url, options) {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || data.error || `Ошибка запроса (${response.status}).`);
+    return data;
   }
 
-  function clearLogs() {
-    els.logsContainer.innerHTML = "";
-    appendLog("Логи очищены.");
+  const post = (url, body) => api(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  function message(id, text, state = "info") {
+    const element = $(id);
+    element.hidden = !text;
+    element.dataset.state = state;
+    element.textContent = text;
   }
 
-  /* ---------- WebSocket для логов ---------- */
+  function working(busy) {
+    busyButtons.forEach((button) => { button.disabled = busy; });
+  }
+
+  function showReadme(text, label) {
+    readme = text;
+    $("readmeState").textContent = label || "Сгенерируем из данных проекта";
+  }
+
+  function progress(percent, label) {
+    $("progressBar").value = percent;
+    $("progressLabel").textContent = label;
+  }
+
+  function addLog(text) {
+    const logs = $("logsContainer");
+    const line = document.createElement("div");
+    line.textContent = text;
+    logs.append(line);
+    if (logs.childElementCount > 200) logs.firstElementChild.remove();
+    logs.scrollTop = logs.scrollHeight;
+  }
 
   function connectLogs() {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    ws = new WebSocket(`${protocol}//${window.location.host}/ws/logs`);
-
-    ws.onopen = () => {
-      els.wsStatus.className = "w-2 h-2 rounded-full bg-emerald-500";
-      if (els.wsStatusText) els.wsStatusText.textContent = "Веб-сокет подключён";
-      appendLog("Канал логов открыт.");
+    const socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/logs`);
+    const status = $("wsStatus");
+    socket.onopen = () => {
+      status.dataset.state = "ok";
+      status.lastElementChild.textContent = "Подключён";
     };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "log") {
-          appendLog(data.message);
-        } else if (data.type === "progress") {
-          updateProgress(data.percent, data.message);
-        } else if (data.type === "push_conflict") {
-          appendLog("Конфликт пуша: на GitHub есть новые изменения.");
-          openPushConflictModal({
-            project_name: data.project_name,
-            folder_path: data.folder_path,
-          });
-        }
-      } catch (err) {
-        // silently ignore malformed frames
-      }
+    socket.onmessage = ({ data }) => {
+      const frame = JSON.parse(data);
+      if (frame.type === "log") addLog(frame.message);
+      if (frame.type === "progress" && publishing) progress(frame.percent, frame.message);
     };
-
-    ws.onclose = () => {
-      els.wsStatus.className = "w-2 h-2 rounded-full bg-gray-600";
-      if (els.wsStatusText) els.wsStatusText.textContent = "Веб-сокет отключён";
-      appendLog("Канал логов закрыт. Переподключение через 3 секунды…", "warn");
+    socket.onclose = () => {
+      status.dataset.state = "error";
+      status.lastElementChild.textContent = "Переподключение…";
       setTimeout(connectLogs, 3000);
     };
-
-    ws.onerror = () => {
-      ws.close();
-    };
   }
-
-  /* ---------- Токен: статус ---------- */
-
-  function setTokenStatus(ok, text) {
-    if (!els.tokenStatus) return;
-    els.tokenStatus.classList.remove("hidden");
-    if (els.tokenStatusDot) {
-      els.tokenStatusDot.className = `w-2 h-2 rounded-full ${ok ? "bg-emerald-500" : "bg-red-500"}`;
-    }
-    if (els.tokenStatusText) els.tokenStatusText.textContent = text;
-  }
-
-  async function checkTokenStatus() {
-    try {
-      const res = await fetch(`${BASE}/validate-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: "" }), // пустой -> проверит токен из .env
-      });
-      const data = await res.json();
-      setTokenStatus(data.ok, data.message || (data.ok ? "Токен задан" : "Токен не задан"));
-    } catch (err) {
-      setTokenStatus(false, "Не удалось проверить токен");
-    }
-  }
-
-  /* ---------- Токен: модал ---------- */
-
-  function openTokenModal() {
-    els.tokenModal.classList.remove("hidden");
-    els.tokenInput.focus();
-    els.tokenResult.classList.add("hidden");
-    els.tokenResult.textContent = "";
-    els.validateTokenBtn.disabled = false;
-    els.saveTokenBtn.disabled = true;
-  }
-
-  function closeTokenModal() {
-    els.tokenModal.classList.add("hidden");
-  }
-
-  function showTokenResult(ok, text) {
-    els.tokenResult.classList.remove("hidden");
-    els.tokenResult.className = `p-3 rounded-lg text-sm ${ok ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-300" : "bg-red-500/10 border border-red-500/30 text-red-300"}`;
-    els.tokenResult.textContent = text;
-  }
-
-  /* ---------- Сохранённые репозитории ---------- */
-
-  async function loadSavedRepos() {
-    try {
-      const res = await fetch(`${BASE}/repos`);
-      const repos = await res.json();
-      renderLibraryRepos(repos || []);
-    } catch (err) {
-      appendLog(`Не удалось загрузить список репозиториев: ${err.message}`);
-    }
-  }
-
-  function renderSavedRepos(repos) {
-    if (!els.savedReposList) return;
-    els.savedReposList.innerHTML = "";
-
-    if (!repos || repos.length === 0) {
-      els.savedReposList.innerHTML = '<div class="text-xs text-gray-500 italic">Нет сохранённых репозиториев.</div>';
-      return;
-    }
-
-    repos.forEach((repo) => {
-      const div = document.createElement("div");
-      div.className = "flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-black/20 border border-white/5";
-      div.innerHTML = `
-        <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-white truncate">${escapeHtml(repo.name || "")}</div>
-          ${repo.description ? `<div class="text-xs text-gray-400 truncate">${escapeHtml(repo.description)}</div>` : ""}
-          <div class="text-[10px] text-gray-500 mt-0.5 font-mono">${escapeHtml(repo.folder_path || "")}</div>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="${escapeHtml(repo.url || `https://github.com/${repo.name}`)}" target="_blank" rel="noopener noreferrer"
-             class="text-xs text-cyan-400 hover:text-cyan-300 underline">Открыть на GitHub</a>
-          <button class="delete-repo-btn p-1.5 text-gray-500 hover:text-red-400 transition-colors" data-name="${escapeHtml(repo.name || "")}" title="Удалить из списка">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
-        </div>
-      `;
-      els.savedReposList.appendChild(div);
-    });
-
-    // Навешиваем обработчики удаления
-    els.savedReposList.querySelectorAll(".delete-repo-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const name = btn.dataset.name;
-        if (!confirm(`Удалить "${name}" из списка сохранённых?`)) return;
-        try {
-          await fetch(`${BASE}/repos/${encodeURIComponent(name)}`, { method: "DELETE" });
-          loadSavedRepos();
-          appendLog(`Репозиторий "${name}" удалён из списка.`);
-        } catch (err) {
-          appendLog(`Не удалось удалить репозиторий: ${err.message}`);
-        }
-      });
-    });
-  }
-
-  /* ---------- API ---------- */
 
   async function selectFolder() {
-    els.publishBtn.disabled = true;
-    els.publishBtn.textContent = "Открываю диалог…";
+    working(true);
+    message("publishMessage", "");
     try {
-      const res = await fetch(`${BASE}/select-folder`, { method: "POST" });
-      const data = await res.json();
-      els.folderPath.textContent = data.path || "(папка не выбрана)";
-      els.folderPath.className =
-        "mt-2 text-xs font-mono rounded-lg p-2 border " +
-        (data.path ? "border-cyan-500/40 text-cyan-300 bg-cyan-500/10" : "border-white/5 text-gray-400 bg-black/20");
-      if (data.path) {
-        appendLog(`Папка выбрана: ${data.path}`);
-        // Подгружаем существующий README.md, если есть
-        await loadExistingReadme(data.path);
-      } else {
-        appendLog("Выбор папки отменён пользователем.");
+      const { path, repo_name } = await post("/select-folder");
+      if (!path || path === folder) return;
+      folder = path;
+      $("folderPath").textContent = path;
+      showReadme(null);
+      if (repo_name && !$("projectName").value) {
+        $("projectName").value = repo_name;
       }
-    } catch (err) {
-      appendLog(`Ошибка при выборе папки: ${err.message}`);
+      const { content } = await post("/readme/load", { folder_path: folder });
+      if (content !== null) showReadme(content, "Загружен из папки проекта");
+    } catch (error) {
+      message("publishMessage", error.message, "error");
     } finally {
-      els.publishBtn.disabled = false;
-      els.publishBtn.textContent = "Опубликовать на GitHub";
+      working(false);
     }
   }
 
-  /* ---------- Загрузка существующего README.md ---------- */
-
-  async function loadExistingReadme(folderPath) {
-    if (!folderPath) return;
-    try {
-      const res = await fetch(`${BASE}/readme/load`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder_path: folderPath }),
-      });
-      const data = await res.json();
-      if (data.content) {
-        els.readmeManualContent = data.content;
-        appendLog("Найден существующий README.md в папке проекта.");
-      } else {
-        els.readmeManualContent = null;
-      }
-    } catch (err) {
-      // silently ignore — folder may not have README yet
-    }
+  function projectData() {
+    const [project_name, description, tech_stack, demo_link] = projectFields.map((id) => $(id).value.trim());
+    return { project_name, description, tech_stack, demo_link, private: $("publishForm").repoVisibility.value === "private" };
   }
 
-  async function publish() {
-    const payload = {
-      project_name: els.projectName.value,
-      description: els.description.value,
-      tech_stack: els.techStack.value,
-      demo_link: els.demoLink.value,
-      folder_path: els.folderPath.textContent.replace("(папка не выбрана)", "").trim(),
-      update_if_exists: els.updateExisting.checked,
-      private: document.querySelector('input[name="repoVisibility"]:checked').value === "private",
-      readme_content: els.readmeManualContent || undefined,
-    };
+  function validProject() {
+    const name = $("projectName");
+    name.value = name.value.trim();
+    return name.reportValidity() && $("demoLink").reportValidity();
+  }
 
-    if (!payload.project_name) {
-      appendLog("Укажите название проекта.", "warn");
-      els.projectName.focus();
+  function showRepoLink(rawUrl) {
+    const link = $("goToRepoBtn");
+    const url = githubUrl(rawUrl);
+    link.hidden = !url;
+    if (url) link.href = url;
+    else link.removeAttribute("href");
+  }
+
+  async function publish(event) {
+    event.preventDefault();
+    if (publishBtn.disabled) return;
+    message("publishMessage", "");
+    if (!validProject()) return;
+    if (!folder) {
+      message("publishMessage", "Выберите папку с проектом.", "error");
+      $("selectFolderBtn").focus();
       return;
     }
-    if (!payload.folder_path) {
-      appendLog("Выберите папку с проектом.", "warn");
-      els.selectFolderBtn.focus();
+    working(true);
+    publishing = true;
+    cancelBtn.hidden = false;
+    showRepoLink(null);
+    progress(0, "Подготовка публикации…");
+    $("progressSection").hidden = false;
+    publishBtn.lastElementChild.textContent = "Публикуем…";
+    try {
+      const { url } = await post("/publish", {
+        ...projectData(), folder_path: folder,
+        update_if_exists: $("updateExisting").checked, readme_content: readme,
+      });
+      message("publishMessage", "Проект опубликован на GitHub.", "ok");
+      showRepoLink(url);
+    } catch (error) {
+      message("publishMessage", error.message, "error");
+    } finally {
+      publishing = false;
+      cancelBtn.hidden = true;
+      $("progressSection").hidden = true;
+      publishBtn.lastElementChild.textContent = "Опубликовать на GitHub";
+      working(false);
+    }
+  }
+
+  cancelBtn.addEventListener("click", async () => {
+    cancelBtn.disabled = true;
+    try {
+      await post("/publish/cancel");
+      message("publishMessage", "Отменяем публикацию…", "info");
+    } catch (error) {
+      message("publishMessage", error.message, "error");
+    } finally {
+      cancelBtn.disabled = false;
+    }
+  });
+
+  async function generateReadme() {
+    const editor = $("readmeEditor");
+    const data = projectData();
+    if (!data.project_name) {
+      message("readmeResult", "Чтобы сгенерировать README, укажите название репозитория в форме проекта.");
       return;
     }
-
-    // Сброс прогресс-бара
-    els.progressSection.classList.remove("hidden");
-    els.progressBar.style.width = "0%";
-    els.progressPercent.textContent = "0%";
-    els.progressLabel.textContent = "Начало публикации…";
-
-    els.publishBtn.disabled = true;
-    els.publishBtn.textContent = "Идёт публикация…";
-
+    const buttons = [$("generateReadmeBtn"), $("saveReadmeBtn")];
+    buttons.forEach((button) => { button.disabled = true; });
+    editor.readOnly = true;
+    message("readmeResult", "Генерируем README…");
     try {
-      const res = await fetch(`${BASE}/publish`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        // Проверяем, есть ли конфликт пуша (409)
-        if (res.status === 409) {
-          appendLog("Конфликт пуша: на GitHub есть новые изменения.");
-          openPushConflictModal(payload);
-        } else {
-          appendLog(`Ошибка запуска: ${data.error || res.status}`);
-        }
-        els.progressSection.classList.add("hidden");
-        return;
-      }
-
-      appendLog("Публикация запущена. Следите за логами справа…");
-    } catch (err) {
-      appendLog(`Сетевая ошибка: ${err.message}`);
-      els.progressSection.classList.add("hidden");
+      const { content } = await post("/generate-readme", data);
+      if ($("readmeModal").open) editor.value = content;
+      message("readmeResult", "");
+    } catch (error) {
+      message("readmeResult", error.message, "error");
     } finally {
-      els.publishBtn.disabled = false;
-      els.publishBtn.textContent = "Опубликовать на GitHub";
+      editor.readOnly = false;
+      buttons.forEach((button) => { button.disabled = false; });
     }
   }
 
-  /* ---------- Редактор README (модал) ---------- */
-
-  async function openReadmeModal() {
-    if (els.readmeModal) els.readmeModal.classList.remove("hidden");
-    if (els.readmeModalBackdrop) els.readmeModalBackdrop.classList.remove("hidden");
-    // Если уже есть загруженный из папки контент — показываем его, иначе генерируем
-    if (els.readmeManualContent) {
-      els.readmeEditor.value = els.readmeManualContent;
-    } else {
-      await generateReadmePreview();
-    }
-    els.readmeEditor.focus();
+  function tokenStatus(ok, text) {
+    $("tokenStatus").dataset.state = ok ? "ok" : "error";
+    $("tokenStatusText").textContent = text;
   }
 
-  function closeReadmeModal() {
-    if (els.readmeModal) els.readmeModal.classList.add("hidden");
-    if (els.readmeModalBackdrop) els.readmeModalBackdrop.classList.add("hidden");
-  }
-
-  async function generateReadmePreview() {
-    const payload = {
-      project_name: els.projectName.value,
-      description: els.description.value,
-      tech_stack: els.techStack.value,
-      demo_link: els.demoLink.value,
-      private: document.querySelector('input[name="repoVisibility"]:checked').value === "private",
-    };
-
-    if (!payload.project_name) {
-      els.readmeEditor.value = "Заполните название проекта для генерации README…";
-      return;
-    }
-
+  async function checkToken() {
     try {
-      const res = await fetch(`${BASE}/generate-readme`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.content) {
-        els.readmeEditor.value = data.content;
-      } else {
-        els.readmeEditor.value = `Ошибка генерации: ${data.error || "неизвестная ошибка"}`;
-      }
-    } catch (err) {
-      els.readmeEditor.value = `Ошибка генерации README: ${err.message}`;
+      const result = await post("/validate-token", { token: "" });
+      tokenStatus(result.ok, result.ok ? "GitHub подключён" : "GitHub не подключён");
+    } catch {
+      tokenStatus(false, "Не удалось проверить GitHub");
     }
   }
 
-  function saveReadmeContent() {
-    els.readmeManualContent = els.readmeEditor.value.trim() || null;
-    closeReadmeModal();
-    appendLog("README.md отредактирован вручную.");
-  }
-
-  /* ---------- Прогресс-бар ---------- */
-
-  function updateProgress(percent, message) {
-    els.progressSection.classList.remove("hidden");
-    els.progressBar.style.width = percent + "%";
-    els.progressPercent.textContent = percent + "%";
-    if (message) {
-      els.progressLabel.textContent = message;
-    }
-    if (percent >= 100) {
-      setTimeout(() => {
-        els.progressSection.classList.add("hidden");
-      }, 1500);
-    }
-  }
-
-  /* ---------- Логи: показать/скрыть ---------- */
-
-  let logsVisible = false;
-
-  function toggleLogs() {
-    logsVisible = !logsVisible;
-    els.logsContainer.classList.toggle("hidden", !logsVisible);
-    els.toggleLogsBtn.innerHTML = logsVisible
-      ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
-      : `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.482 7.225 8.016 4 13.542 4c5.537 0 10.071 3.225 11.095 8 1.017 4.772-4.963 8-10.595 8-5.537 0-10.071-3.225-11.095-8zM12 14l2-2 2 2m-1-5.036a3 3 0 11-5.364 0"></path></svg>`;
-    els.toggleLogsBtn.title = logsVisible ? "Скрыть логи" : "Показать логи";
-  }
-
-  /* ---------- Диалог конфликта пуша ---------- */
-
-  function openPushConflictModal(payload) {
-    els.pendingPush = payload;
-    if (els.pushConflictModal) els.pushConflictModal.classList.remove("hidden");
-    if (els.pushConflictBackdrop) els.pushConflictBackdrop.classList.remove("hidden");
-  }
-
-  function closePushConflictModal() {
-    if (els.pushConflictModal) els.pushConflictModal.classList.add("hidden");
-    if (els.pushConflictBackdrop) els.pushConflictBackdrop.classList.add("hidden");
-    els.pendingPush = null;
-  }
-
-  async function resolvePushMerge() {
-    closePushConflictModal();
-    appendLog("Разрешение конфликта: сливаю с локальными…");
-    // Делаем pull --rebase, потом повторяем push
-    try {
-      const res = await fetch(`${BASE}/git/pull-rebase`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder_path: els.folderPath.textContent.replace("(папка не выбрана)", "").trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        appendLog(`Ошибка pull: ${data.error || res.status}`);
-        if (data.error === "stash_pop_conflict") {
-          appendLog(`Детали: ${data.message}`);
-        }
-        return;
-      }
-      appendLog("Пул выполнен. Повторяю публикацию…");
-      // Повторяем публикацию с update_if_exists=true, чтобы не было ошибки "репозиторий уже существует"
-      if (els.pendingPush) {
-        els.pendingPush.update_if_exists = true;
-      }
-      publishWithPayload(els.pendingPush);
-    } catch (err) {
-      appendLog(`Ошибка при пуле: ${err.message}`);
-    }
-  }
-
-  async function resolvePushForce() {
-    closePushConflictModal();
-    appendLog("Разрешение конфликта: force push на GitHub…");
-    if (els.pendingPush) {
-      els.pendingPush.update_if_exists = true;
-      publishWithPayload(els.pendingPush);
-    }
-  }
-
-  async function publishWithPayload(payload) {
-    els.publishBtn.disabled = true;
-    els.publishBtn.textContent = "Идёт публикация…";
-
-    // Сброс прогресс-бара
-    els.progressSection.classList.remove("hidden");
-    els.progressBar.style.width = "0%";
-    els.progressPercent.textContent = "0%";
-    els.progressLabel.textContent = "Начало публикации…";
-
-    try {
-      const res = await fetch(`${BASE}/publish`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        appendLog(`Ошибка запуска: ${data.error || res.status}`);
-        els.progressSection.classList.add("hidden");
-        return;
-      }
-
-      appendLog("Публикация запущена. Следите за логами справа…");
-    } catch (err) {
-      appendLog(`Сетевая ошибка: ${err.message}`);
-      els.progressSection.classList.add("hidden");
-    } finally {
-      els.publishBtn.disabled = false;
-      els.publishBtn.textContent = "Опубликовать на GitHub";
-    }
-  }
-
-  /* ---------- Кнопка «Перейти к репозиторию» ---------- */
-
-  async function loadLastPublishedUrl() {
-    try {
-      const res = await fetch(`${BASE}/last-published`);
-      const data = await res.json();
-      if (data.url) {
-        els.goToRepoBtn.classList.remove("hidden");
-        els.goToRepoBtn.onclick = () => {
-          window.open(data.url, "_blank");
-        };
-      }
-    } catch (err) {
-      // silently ignore
-    }
-  }
-
-  function openLastPublishedRepo() {
-    if (els.goToRepoBtn && !els.goToRepoBtn.classList.contains("hidden")) {
-      // URL уже привязан через onclick
-      els.goToRepoBtn.click();
-    }
-  }
-
-  /* ---------- Библиотека: drawer ---------- */
-
-  function openLibraryDrawer() {
-    if (els.libraryDrawer) els.libraryDrawer.classList.remove("translate-x-full");
-    if (els.libraryBackdrop) els.libraryBackdrop.classList.remove("hidden");
-  }
-
-  function closeLibraryDrawer() {
-    if (els.libraryDrawer) els.libraryDrawer.classList.add("translate-x-full");
-    if (els.libraryBackdrop) els.libraryBackdrop.classList.add("hidden");
-  }
-
-  /* ---------- Библиотека: загрузка из GitHub ---------- */
-
-  async function loadUserRepos() {
-    try {
-      const res = await fetch(`${BASE}/user-repos`);
-      const data = await res.json();
-      if (data.error) {
-        appendLog(`Не удалось загрузить репозитории из GitHub: ${data.error}`);
-        return;
-      }
-      renderLibraryRepos(data.repos || []);
-      appendLog(`Загружено репозиториев из GitHub: ${data.repos ? data.repos.length : 0}`);
-    } catch (err) {
-      appendLog(`Ошибка при загрузке репозиториев из GitHub: ${err.message}`);
-    }
-  }
-
-  /* ---------- Библиотека: ручное добавление ---------- */
-
-  async function addManualRepo() {
-    const url = els.manualRepoUrl.value.trim();
-    if (!url) return;
-
-    els.addManualRepoBtn.disabled = true;
-    els.addManualRepoBtn.textContent = "Добавляю…";
-
-    try {
-      const res = await fetch(`${BASE}/repos/manual`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        els.manualRepoUrl.value = "";
-        renderLibraryRepos(data.repos || []);
-        appendLog(`Репозиторий добавлен в библиотеку: ${url}`);
-      } else {
-        appendLog(`Ошибка добавления: ${data.message || "неизвестная ошибка"}`);
-      }
-    } catch (err) {
-      appendLog(`Сетевая ошибка при добавлении: ${err.message}`);
-    } finally {
-      els.addManualRepoBtn.disabled = false;
-      els.addManualRepoBtn.textContent = "Добавить";
-    }
-  }
-
-  /* ---------- Библиотека: рендеринг ---------- */
-
-  function renderLibraryRepos(repos) {
-    if (!els.savedReposList) return;
-    els.savedReposList.innerHTML = "";
-
-    if (!repos || repos.length === 0) {
-      els.savedReposList.innerHTML = '<div class="text-xs text-gray-500 italic">Библиотека пуста. Загрузите репозитории из GitHub или добавьте их вручную.</div>';
-      return;
-    }
-
-    repos.forEach((repo) => {
-      const div = document.createElement("div");
-      div.className = "flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-black/20 border border-white/5";
-      const repoUrl = repo.url || `https://github.com/${repo.full_name || repo.name}`;
-      div.innerHTML = `
-        <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-white truncate">${escapeHtml(repo.full_name || repo.name || "")}</div>
-          ${repo.description ? `<div class="text-xs text-gray-400 truncate">${escapeHtml(repo.description)}</div>` : ""}
-          <div class="text-[10px] text-gray-500 mt-0.5 font-mono">${escapeHtml(repo.url || "")}</div>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer"
-             class="text-xs text-cyan-400 hover:text-cyan-300 underline">Открыть на GitHub</a>
-          <button class="delete-repo-btn p-1.5 text-gray-500 hover:text-red-400 transition-colors" data-name="${escapeHtml(repo.full_name || repo.name || "")}" title="Удалить из библиотеки">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
-        </div>
-      `;
-      els.savedReposList.appendChild(div);
-    });
-
-    els.savedReposList.querySelectorAll(".delete-repo-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const name = btn.dataset.name;
-        if (!confirm(`Удалить "${name}" из библиотеки?`)) return;
-        try {
-          await fetch(`${BASE}/repos/${encodeURIComponent(name)}`, { method: "DELETE" });
-          loadSavedRepos();
-          appendLog(`Репозиторий "${name}" удалён из библиотеки.`);
-        } catch (err) {
-          appendLog(`Не удалось удалить репозиторий: ${err.message}`);
-        }
-      });
-    });
-  }
-
-  async function validateToken() {
-    const token = els.tokenInput.value.trim();
+  async function submitToken(save) {
+    const token = $("tokenInput").value.trim();
     if (!token) {
-      showTokenResult(false, "Введите токен.");
+      message("tokenResult", "Введите токен GitHub.", "error");
       return;
     }
-
-    els.validateTokenBtn.disabled = true;
-    els.validateTokenBtn.textContent = "Проверяю…";
-
+    const controls = [$("tokenInput"), $("validateTokenBtn"), $("saveTokenBtn")];
+    controls.forEach((control) => { control.disabled = true; });
+    message("tokenResult", "Проверяем токен…");
     try {
-      const res = await fetch(`${BASE}/validate-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      showTokenResult(data.ok, data.message || (data.ok ? "Токен валиден" : "Токен не валиден"));
-      if (data.ok) {
-        els.saveTokenBtn.disabled = false;
+      const data = await post(save ? "/save-token" : "/validate-token", { token });
+      message("tokenResult", data.message, data.ok ? "ok" : "error");
+      if (save && data.ok) {
+        $("tokenInput").value = "";
+        tokenStatus(true, "GitHub подключён");
       }
-    } catch (err) {
-      showTokenResult(false, `Ошибка проверки: ${err.message}`);
+    } catch (error) {
+      message("tokenResult", error.message, "error");
     } finally {
-      els.validateTokenBtn.disabled = false;
-      els.validateTokenBtn.textContent = "Проверить токен";
+      controls.forEach((control) => { control.disabled = false; });
     }
   }
 
-  async function saveToken() {
-    const token = els.tokenInput.value.trim();
-    if (!token) return;
-
-    els.saveTokenBtn.disabled = true;
-    els.saveTokenBtn.textContent = "Сохраняю…";
-
+  function githubUrl(value) {
     try {
-      const res = await fetch(`${BASE}/save-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      showTokenResult(data.ok, data.message);
-      if (data.ok) {
-        setTokenStatus(true, "Токен задан");
-        // Закрываем модал через короткую задержку, чтобы пользователь увидел результат
-        setTimeout(closeTokenModal, 800);
-        appendLog("GITHUB_TOKEN сохранён и проверен.");
+      const url = new URL(value);
+      if (url.origin === "https://github.com" && !url.username && !url.password) return url.href;
+    } catch { /* Invalid or absent URL. */ }
+    return null;
+  }
+
+  function repoAction(label, callback) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "button";
+    button.textContent = label;
+    button.addEventListener("click", callback);
+    return button;
+  }
+
+  function fillProject(repo) {
+    $("projectName").value = repo.name || "";
+    $("description").value = repo.description || "";
+    $("techStack").value = "";
+    $("demoLink").value = repo.homepage || "";
+    $("publishForm").repoVisibility.value = repo.private ? "private" : "public";
+    $("updateExisting").checked = false;
+    folder = "";
+    $("folderPath").textContent = "Папка не выбрана";
+    showReadme(null);
+    message("publishMessage", "");
+    $("libraryDrawer").close();
+    $("projectName").focus();
+  }
+
+  function renderRepos(repos, saved) {
+    const list = $("libraryReposList");
+    list.replaceChildren();
+    if (!repos.length) {
+      message("libraryResult", saved ? "Библиотека пуста. Добавьте репозиторий по ссылке." : "В аккаунте нет репозиториев.");
+      return;
+    }
+    for (const repo of repos) {
+      const name = repo.full_name || repo.name;
+      const item = document.createElement("article");
+      const title = document.createElement("strong");
+      const description = document.createElement("p");
+      const actions = document.createElement("div");
+      item.className = "repo-item";
+      title.textContent = name;
+      description.className = "hint";
+      description.textContent = repo.description || "";
+      actions.className = "repo-actions";
+      const url = githubUrl(repo.url);
+      if (url) {
+        const link = document.createElement("a");
+        link.className = "button";
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Открыть на GitHub";
+        actions.append(link);
       }
-    } catch (err) {
-      showTokenResult(false, `Не удалось сохранить токен: ${err.message}`);
+      actions.append(repoAction("Заполнить форму", () => fillProject(repo)));
+      if (saved) actions.append(repoAction("Удалить из библиотеки", async () => {
+        if (!confirm(`Удалить «${name}» из библиотеки?`)) return;
+        try {
+          await api(`/repos/${encodeURIComponent(name)}`, { method: "DELETE" });
+          await loadRepos(true);
+        } catch (error) {
+          message("libraryResult", error.message, "error");
+        }
+      }));
+      item.append(title, description, actions);
+      list.append(item);
+    }
+  }
+
+  async function loadRepos(saved) {
+    const request = ++libraryRequest;
+    $("libraryReposList").replaceChildren();
+    $("loadSavedReposBtn").setAttribute("aria-pressed", String(saved));
+    $("loadUserReposBtn").setAttribute("aria-pressed", String(!saved));
+    message("libraryResult", "Загружаем репозитории…");
+    try {
+      const result = await api(saved ? "/repos" : "/user-repos");
+      if (request !== libraryRequest) return;
+      message("libraryResult", "");
+      renderRepos(saved ? result : result.repos, saved);
+    } catch (error) {
+      if (request === libraryRequest) message("libraryResult", error.message, "error");
+    }
+  }
+
+  document.querySelectorAll("dialog").forEach((dialog) => {
+    dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
+  });
+  activate("selectFolderBtn", selectFolder);
+  $("publishForm").addEventListener("submit", publish);
+  activate("clearLogsBtn", () => $("logsContainer").replaceChildren());
+  activate("toggleReadmeEditorBtn", () => {
+    $("readmeEditor").value = readme ?? "";
+    message("readmeResult", "");
+    $("readmeModal").showModal();
+    $("readmeEditor").focus();
+    if (readme === null && !$("generateReadmeBtn").disabled) generateReadme();
+  });
+  activate("generateReadmeBtn", generateReadme);
+  activate("saveReadmeBtn", () => {
+    showReadme($("readmeEditor").value, "Сохранён в редакторе");
+    $("readmeModal").close();
+  });
+  activate("openTokenModalBtn", () => {
+    message("tokenResult", "");
+    $("tokenModal").showModal();
+    $("tokenInput").focus();
+  });
+  $("tokenModal").addEventListener("close", () => { $("tokenInput").value = ""; });
+  activate("validateTokenBtn", () => submitToken(false));
+  activate("saveTokenBtn", () => submitToken(true));
+  activate("openLibraryBtn", () => {
+    $("libraryDrawer").showModal();
+    loadRepos(true);
+  });
+  activate("loadSavedReposBtn", () => loadRepos(true));
+  activate("loadUserReposBtn", () => loadRepos(false));
+  $("manualAddForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const input = $("manualRepoUrl");
+    const button = event.submitter;
+    button.disabled = true;
+    try {
+      await post("/repos/manual", { url: input.value.trim() });
+      input.value = "";
+      await loadRepos(true);
+    } catch (error) {
+      message("libraryResult", error.message, "error");
     } finally {
-      els.saveTokenBtn.disabled = false;
-      els.saveTokenBtn.textContent = "Сохранить";
+      button.disabled = false;
+    }
+  });
+
+  async function restoreLastFolder() {
+    try {
+      const { folder: saved } = await api("/last-folder");
+      if (saved) {
+        folder = saved;
+        $("folderPath").textContent = saved;
+        const { content } = await post("/readme/load", { folder_path: saved });
+        if (content !== null) showReadme(content, "Загружен из папки проекта");
+      }
+    } catch {
+      // Игнорируем — папка будет выбрана вручную
     }
   }
 
-  /* ---------- Утилиты ---------- */
-
-  function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  /* ---------- Вспомогательная функция для безопасной подписки ---------- */
-
-  function safeAddEventListener(el, event, handler) {
-    if (el) {
-      el.addEventListener(event, handler);
+  function initTheme() {
+    const saved = localStorage.getItem("portfolioforge-theme");
+    const dark = saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    if (dark) {
+      document.documentElement.dataset.theme = "dark";
+      themeBtn.querySelector("use").setAttribute("href", "#i-sun");
+    } else {
+      document.documentElement.dataset.theme = "light";
+      themeBtn.querySelector("use").setAttribute("href", "#i-moon");
     }
   }
 
-  /* ---------- Инициализация ---------- */
-
-  function init() {
-    connectLogs();
-
-    safeAddEventListener(els.selectFolderBtn, "click", selectFolder);
-    safeAddEventListener(els.publishBtn, "click", publish);
-    safeAddEventListener(els.clearLogsBtn, "click", clearLogs);
-    if (els.publishForm) {
-      els.publishForm.addEventListener("submit", (e) => e.preventDefault());
+  themeBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.dataset.theme === "dark";
+    if (isDark) {
+      document.documentElement.dataset.theme = "light";
+      localStorage.setItem("portfolioforge-theme", "light");
+      themeBtn.querySelector("use").setAttribute("href", "#i-moon");
+    } else {
+      document.documentElement.dataset.theme = "dark";
+      localStorage.setItem("portfolioforge-theme", "dark");
+      themeBtn.querySelector("use").setAttribute("href", "#i-sun");
     }
+  });
 
-    // Редактор README (модал)
-    safeAddEventListener(els.toggleReadmeEditorBtn, "click", openReadmeModal);
-    safeAddEventListener(els.closeReadmeModalBtn, "click", closeReadmeModal);
-    safeAddEventListener(els.readmeModalBackdrop, "click", closeReadmeModal);
-    safeAddEventListener(els.saveReadmeBtn, "click", saveReadmeContent);
-    safeAddEventListener(els.cancelReadmeBtn, "click", closeReadmeModal);
-
-    // Автогенерация при изменении полей (если модал открыт)
-    const readmeFields = [els.projectName, els.description, els.techStack, els.demoLink];
-    readmeFields.forEach((field) => {
-      if (field) {
-        field.addEventListener("input", () => {
-          if (els.readmeModal && !els.readmeModal.classList.contains("hidden")) generateReadmePreview();
-        });
-      }
-    });
-    document.querySelectorAll('input[name="repoVisibility"]').forEach((radio) => {
-      radio.addEventListener("change", () => {
-        if (els.readmeModal && !els.readmeModal.classList.contains("hidden")) generateReadmePreview();
-      });
-    });
-
-    // Логи: показать/скрыть
-    safeAddEventListener(els.toggleLogsBtn, "click", toggleLogs);
-
-    // Диалог конфликта пуша
-    safeAddEventListener(els.pushConflictBackdrop, "click", closePushConflictModal);
-    safeAddEventListener(els.pushMergeBtn, "click", resolvePushMerge);
-    safeAddEventListener(els.pushForceBtn, "click", resolvePushForce);
-
-    // Библиотека
-    safeAddEventListener(els.openLibraryBtn, "click", openLibraryDrawer);
-    safeAddEventListener(els.closeLibraryBtn, "click", closeLibraryDrawer);
-    safeAddEventListener(els.libraryBackdrop, "click", closeLibraryDrawer);
-    safeAddEventListener(els.loadUserReposBtn, "click", loadUserRepos);
-    safeAddEventListener(els.showManualAddBtn, "click", () => {
-      if (els.manualAddForm) els.manualAddForm.classList.toggle("hidden");
-    });
-    safeAddEventListener(els.addManualRepoBtn, "click", addManualRepo);
-    safeAddEventListener(els.manualRepoUrl, "keypress", (e) => {
-      if (e.key === "Enter") addManualRepo();
-    });
-
-    // Закрытие drawer по Escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && els.libraryDrawer && !els.libraryDrawer.classList.contains("translate-x-full")) {
-        closeLibraryDrawer();
-      }
-    });
-
-    // Токен-модал
-    safeAddEventListener(els.openTokenModalBtn, "click", openTokenModal);
-    safeAddEventListener(els.closeTokenModalBtn, "click", closeTokenModal);
-    safeAddEventListener(els.tokenModalBackdrop, "click", closeTokenModal);
-    safeAddEventListener(els.validateTokenBtn, "click", validateToken);
-    safeAddEventListener(els.saveTokenBtn, "click", saveToken);
-
-    // Закрытие модала по Escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && els.tokenModal && !els.tokenModal.classList.contains("hidden")) {
-        closeTokenModal();
-      }
-    });
-
-    // Первичная проверка токена, загрузка библиотеки и последнего опубликованного репозитория
-    checkTokenStatus();
-    loadSavedRepos();
-    loadLastPublishedUrl();
-
-    appendLog("Готов к работе. Заполните форму и нажмите «Опубликовать».", "info");
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
+  initTheme();
+  restoreLastFolder();
+  connectLogs();
+  checkToken();
+  api("/last-published").then(({ url }) => { if (!publishing) showRepoLink(url); }).catch(() => {});
 })();

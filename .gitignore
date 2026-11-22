@@ -1,35 +1,12 @@
 # Environment variables (содержит GITHUB_TOKEN — не коммитить)
 .env
-
 # Виртуальное окружение
 venv/
 .venv/
-
 # Python кэш
 __pycache__/
 *.py[cod]
 $py.cache/
-
 # OS
 .DS_Store
 Thumbs.db
-
-# Логи приложения (не должны попадать в репозиторий)
-logs/
-*.log
-
-# Сборка PyInstaller (EXE файлы)
-dist/
-build/
-*.spec
-
-# Данные приложения
-saved_repos.json
-
-# Python метаданные
-*.egg-info/
-*.egg-link
-_check.py
-_p1.txt
-_probe*.txt
-_redaction_probe.txt

@@ -1,3 +1,0 @@
-Line one: the file logs/app.log grows while the app runs.
-Line two: run `git stash push` then `git pull --rebase`.
-Line three: [ADDRESS]/[PERSON_NAME].
