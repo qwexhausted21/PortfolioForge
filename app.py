@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import subprocess
+import sys
 import threading
 from collections import deque
 from logging.handlers import RotatingFileHandler
@@ -43,6 +44,9 @@ REPO_NAME_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
 # Имя ветки Git: латиница, цифры, точка, дефис, подчёркивание, слэш.
 BRANCH_NAME_RE = re.compile(r"^[A-Za-z0-9_.\-/]+$")
+
+# Имя тега Git: латиница, цифры, точка, дефис, подчёркивание.
+TAG_NAME_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
 # URL последнего опубликованного репозитория (для кнопки «Перейти к репозиторию»)
 last_published_repo_url: str | None = None
@@ -343,6 +347,34 @@ async def delete_repo(name: str) -> JSONResponse:
     return JSONResponse({"ok": True})
 
 
+@app.delete("/repos/{name}/delete-github")
+async def delete_github_repo(name: str) -> JSONResponse:
+    """Удаляет репозиторий с GitHub и из локальной библиотеки."""
+    repos = _load_repos()
+    target = None
+    for repo in repos:
+        if repo.get("name") == name or repo.get("full_name") == name:
+            target = repo
+            break
+    if not target:
+        return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+
+    full_name = target.get("full_name") or target.get("name") or name
+    manager = GitHubManager(env_path=ENV_PATH)
+    if not manager.github or not manager.token:
+        return JSONResponse({"ok": False, "message": "Токен не задан"}, status_code=400)
+
+    ok, message = manager.delete_repo(full_name)
+    if not ok:
+        return JSONResponse({"ok": False, "message": message}, status_code=500)
+
+    # Удаляем из локальной библиотеки
+    repos = [r for r in repos if r.get("name") != name]
+    _save_repos(repos)
+    log_info(f"Репозиторий '{full_name}' удалён с GitHub и из библиотеки.")
+    return JSONResponse({"ok": True, "message": message})
+
+
 @app.get("/last-published")
 async def get_last_published() -> JSONResponse:
     """Возвращает URL последнего опубликованного репозитория."""
@@ -456,6 +488,132 @@ async def get_repo_details(name: str) -> JSONResponse:
     return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
 
 
+@app.get("/repos/{name}/tags")
+async def list_tags(name: str) -> JSONResponse:
+    """Возвращает список тегов репозитория из библиотеки."""
+    try:
+        repos = _load_repos()
+        target = None
+        for repo in repos:
+            if repo.get("name") == name or repo.get("full_name") == name:
+                target = repo
+                break
+        if not target:
+            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+
+        full_name = target.get("full_name") or target.get("name") or name
+        manager = GitHubManager(env_path=ENV_PATH)
+        if not manager.github or not manager.token:
+            return JSONResponse({"tags": [], "error": "Токен не задан"}, status_code=400)
+
+        ok, result = manager.get_tags(full_name)
+        if not ok:
+            return JSONResponse({"tags": [], "error": result}, status_code=500)
+        return JSONResponse({"tags": result})
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse({"tags": [], "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
+
+
+@app.get("/repos/{name}/releases/{tag}")
+async def get_release_info(name: str, tag: str) -> JSONResponse:
+    """Возвращает информацию о релизе по тегу."""
+    try:
+        repos = _load_repos()
+        target = None
+        for repo in repos:
+            if repo.get("name") == name or repo.get("full_name") == name:
+                target = repo
+                break
+        if not target:
+            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+
+        full_name = target.get("full_name") or target.get("name") or name
+        manager = GitHubManager(env_path=ENV_PATH)
+        if not manager.github or not manager.token:
+            return JSONResponse({"ok": False, "error": "Токен не задан"}, status_code=400)
+
+        ok, result = manager.get_release(full_name, tag)
+        if not ok:
+            return JSONResponse({"ok": False, "error": result}, status_code=500)
+        return JSONResponse({"ok": True, "release": result})
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
+
+
+@app.post("/repos/{name}/releases/{tag}/body")
+async def update_release_body(name: str, tag: str, request: Request) -> JSONResponse:
+    """Обновляет ChangeLog (описание) существующего релиза."""
+    try:
+        repos = _load_repos()
+        target = None
+        for repo in repos:
+            if repo.get("name") == name or repo.get("full_name") == name:
+                target = repo
+                break
+        if not target:
+            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+
+        full_name = target.get("full_name") or target.get("name") or name
+        data: dict[str, Any] = await request.json()
+        body = data.get("body", "")
+
+        manager = GitHubManager(env_path=ENV_PATH)
+        if not manager.github or not manager.token:
+            return JSONResponse({"ok": False, "error": "Токен не задан"}, status_code=400)
+
+        ok, msg = manager.update_release_body(full_name, tag, body)
+        if not ok:
+            return JSONResponse({"ok": False, "error": msg}, status_code=500)
+        return JSONResponse({"ok": True, "message": msg})
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
+
+
+@app.post("/repos/{name}/releases/{tag}/assets")
+async def upload_release_asset(name: str, tag: str, request: Request) -> JSONResponse:
+    """Загружает файл (asset) на существующий релиз."""
+    try:
+        repos = _load_repos()
+        target = None
+        for repo in repos:
+            if repo.get("name") == name or repo.get("full_name") == name:
+                target = repo
+                break
+        if not target:
+            return JSONResponse({"ok": False, "message": "Репозиторий не найден в библиотеке"}, status_code=404)
+
+        full_name = target.get("full_name") or target.get("name") or name
+
+        form = await request.form()
+        upload_file = form.get("file")
+        asset_name = form.get("asset_name") or (upload_file.filename if hasattr(upload_file, "filename") else None)
+
+        if not upload_file or not asset_name:
+            return JSONResponse({"ok": False, "error": "Не указан файл для загрузки"}, status_code=400)
+
+        import tempfile
+        import shutil
+
+        manager = GitHubManager(env_path=ENV_PATH)
+        if not manager.github or not manager.token:
+            return JSONResponse({"ok": False, "error": "Токен не задан"}, status_code=400)
+
+        # Сохраняем загруженный файл во временное место
+        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(str(upload_file.filename)).suffix) as tmp:
+            shutil.copyfileobj(upload_file.file, tmp)
+            tmp_path = tmp.name
+
+        try:
+            ok, msg = manager.upload_release_asset(full_name, tag, tmp_path, str(asset_name))
+            if not ok:
+                return JSONResponse({"ok": False, "error": msg}, status_code=500)
+            return JSONResponse({"ok": True, "message": msg})
+        finally:
+            Path(tmp_path).unlink(missing_ok=True)
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": f"Внутренняя ошибка сервера: {exc}"}, status_code=500)
+
+
 @app.post("/readme/load")
 async def readme_load(request: Request) -> JSONResponse:
     """Загружает существующий README.md из выбранной папки проекта."""
@@ -486,12 +644,16 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Папка не найдена: {folder}"}, status_code=400)
 
     try:
+        # На Windows скрываем консольное окно git, иначе оно мигает при каждой команде.
+        creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+
         # Скрываем несохранённые изменения, если они есть
         stash_result = subprocess.run(
             ["git", "stash", "push", "-m", "PortfolioForge auto-stash before pull --rebase"],
             cwd=str(folder),
             capture_output=True,
             text=True,
+            creationflags=creationflags,
         )
         stashed = "No local changes to save" not in stash_result.stdout
 
@@ -501,6 +663,7 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
             cwd=str(folder),
             capture_output=True,
             text=True,
+            creationflags=creationflags,
         )
         if pull_result.returncode != 0:
             # Если есть изменения в stash, пытаемся вернуть их
@@ -510,6 +673,7 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
                     cwd=str(folder),
                     capture_output=True,
                     text=True,
+                    creationflags=creationflags,
                 )
             return JSONResponse(
                 {"error": pull_result.stderr.strip() or "Ошибка pull --rebase"},
@@ -523,6 +687,7 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
                 cwd=str(folder),
                 capture_output=True,
                 text=True,
+                creationflags=creationflags,
             )
             if pop_result.returncode != 0:
                 # stash pop тоже дал конфликт — возвращаем ошибку пользователю с подробностями
@@ -543,6 +708,7 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
             cwd=str(folder),
             capture_output=True,
             text=True,
+            creationflags=creationflags,
         )
         log_info(f"git add -A после rebase в {folder}: {commit_result.stdout.strip()} {commit_result.stderr.strip()}")
 
@@ -551,6 +717,7 @@ async def git_pull_rebase(request: Request) -> JSONResponse:
             cwd=str(folder),
             capture_output=True,
             text=True,
+            creationflags=creationflags,
         )
         if commit_result2.returncode != 0 and "nothing to commit" not in commit_result2.stdout.lower():
             log_info(f"git commit после rebase в {folder}: {commit_result2.stderr.strip()}")
@@ -590,6 +757,9 @@ async def publish(request: Request) -> JSONResponse:
     private = bool(data.get("private"))
     readme_content_override = data.get("readme_content")
     branch = (data.get("branch") or "main").strip() or "main"
+    create_release = bool(data.get("create_release"))
+    force_push = bool(data.get("force_push"))
+    tag = (data.get("tag") or "v0.1.0").strip() or "v0.1.0"
 
     if not project_name or not folder_path:
         return JSONResponse(
@@ -608,6 +778,14 @@ async def publish(request: Request) -> JSONResponse:
         return JSONResponse(
             {
                 "error": "Некорректное имя ветки. Разрешены латинские буквы, цифры, точки, дефисы, подчёркивания и слэши."
+            },
+            status_code=400,
+        )
+
+    if create_release and not TAG_NAME_RE.fullmatch(tag):
+        return JSONResponse(
+            {
+                "error": "Некорректный тег. Разрешены латинские буквы, цифры, точки, дефисы и подчёркивания."
             },
             status_code=400,
         )
@@ -666,6 +844,7 @@ async def publish(request: Request) -> JSONResponse:
                 branch=branch,
                 progress_callback=progress_cb,
                 cancel_event=publish_cancel_event,
+                force_push=force_push,
             )
 
             if cancelled():
@@ -674,6 +853,18 @@ async def publish(request: Request) -> JSONResponse:
             global last_published_repo_url
             last_published_repo_url = manager.last_repo_url
             log_info(f"Опубликовано: {manager.last_repo_url}")
+
+            # Создать тег и релиз, если запрошено
+            if create_release:
+                progress(95, "Создание тега и релиза...")
+                try:
+                    ok, msg = manager.create_release(tag, description, manager.last_repo_url)
+                    if ok:
+                        log_info(f"Релиз создан: {msg}")
+                    else:
+                        log_info(f"Не удалось создать релиз: {msg}")
+                except Exception as exc:  # noqa: BLE001
+                    log_info(f"Ошибка создания релиза: {exc}")
 
             # Сохраняем репозиторий в список, если публикация прошла успешно
             try:

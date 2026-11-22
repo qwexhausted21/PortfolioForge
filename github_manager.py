@@ -14,6 +14,7 @@ import logging
 import os
 import re
 import subprocess
+import sys
 import threading
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Tuple
@@ -79,6 +80,7 @@ class GitHubManager:
         self.token: str | None = os.getenv("GITHUB_TOKEN")
         self.github: Github | None = Github(self.token) if self.token else None
         self.last_repo_url: str | None = None
+        self.last_repo_full_name: str | None = None
 
     # ------------------------------------------------------------------ #
     # Публичные методы
@@ -128,6 +130,7 @@ class GitHubManager:
         branch: str = "main",
         progress_callback: Callable[[int, str], None] | None = None,
         cancel_event: Event | None = None,
+        force_push: bool = False,
     ) -> List[str]:
         """Создаёт репозиторий на GitHub и пушит в него код из папки.
 
@@ -181,6 +184,16 @@ class GitHubManager:
             folder = Path(folder_path).resolve()
             if not folder.is_dir():
                 raise FileNotFoundError(f"Папка не найдена: {folder}")
+
+            # На Windows добавляем папку в git safe.directory, иначе Git блокирует
+            # операции с репозиторием, созданным другим пользователем
+            if sys.platform == "win32":
+                self._run_git(
+                    folder,
+                    ["config", "--global", "--add", "safe.directory", str(folder)],
+                    log,
+                    check=False,
+                )
 
             progress(10, "Проверка токена GitHub...")
             try:
@@ -260,16 +273,20 @@ class GitHubManager:
             check_cancelled()
 
             progress(55, "Настройка локальной идентичности Git (user.name / user.email)...")
-            self._run_git(
+            name_result = self._run_git(
                 folder,
                 ["config", "user.name", "PortfolioForge"],
                 log,
+                check=False,
             )
-            self._run_git(
+            email_result = self._run_git(
                 folder,
                 ["config", "user.email", "portfolioforge@localhost"],
                 log,
+                check=False,
             )
+            if name_result.returncode != 0 or email_result.returncode != 0:
+                log("Предупреждение: не удалось настроить локальную идентичность Git. Продолжаю без неё.")
 
             log("Создание .gitignore (исключаем .env, venv, кэш)...")
             gitignore_content = (
@@ -333,21 +350,34 @@ class GitHubManager:
                 is_conflict = "rejected" in stderr_output or "non-fast-forward" in stderr_output
 
                 if is_conflict:
-                    log("ОШИБКА: Конфликт пуша — на GitHub есть новые изменения.")
-                    raise GitPushConflictError(
-                        "На GitHub есть изменения, которых нет локально. "
-                        "Нужно сначала слить их или выполнить force push."
-                    )
+                    if force_push:
+                        log("Конфликт пуша — выполняю force push (перезапись)...")
+                        self._run_git(
+                            folder,
+                            ["push", "-u", "origin", branch, "--force"],
+                            log,
+                        )
+                    else:
+                        log("ОШИБКА: Конфликт пуша — на GitHub есть новые изменения.")
+                        raise GitPushConflictError(
+                            "На GitHub есть изменения, которых нет локально. "
+                            "Нужно сначала слить их или выполнить force push."
+                        )
 
-                if update_if_exists:
+                if update_if_exists and not force_push:
                     log("Обычный push не прошёл. Пробую force push (режим апдейта)...")
-                    self._run_git(folder, ["push", "-u", "origin", branch, "--force"], log)
-                else:
+                    self._run_git(
+                        folder,
+                        ["push", "-u", "origin", branch, "--force"],
+                        log,
+                    )
+                elif not force_push:
                     raise
 
             progress(100, f"Готово! Проект опубликован: {repo.html_url}")
             log(f"Готово! Проект опубликован: {repo.html_url}")
             self.last_repo_url = repo.html_url
+            self.last_repo_full_name = repo.full_name
             return logs
 
         except _PublishCancelledError:
@@ -357,6 +387,215 @@ class GitHubManager:
         except Exception as exc:  # noqa: BLE001 — любая ошибка сети/API попадает в лог
             log(f"ОШИБКА: {exc}")
             raise
+
+    def delete_repo(self, full_name: str) -> Tuple[bool, str]:
+        """Удаляет репозиторий с GitHub.
+
+        Args:
+            full_name: Полное имя репозитория в формате owner/repo.
+
+        Returns:
+            (успех, сообщение).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+
+        try:
+            repo = _safe_github_call(self.github.get_repo, full_name)
+            repo.delete()
+            log(f"Репозиторий '{full_name}' удалён с GitHub.")
+            return True, f"Репозиторий '{full_name}' удалён с GitHub."
+        except GithubException as exc:
+            log(f"Ошибка удаления репозитория '{full_name}': {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
+
+    def create_release(
+        self,
+        tag: str,
+        description: str,
+        release_url: str | None = None,
+    ) -> Tuple[bool, str]:
+        """Создаёт тег и релиз на GitHub.
+
+        Args:
+            tag: Имя тега (например, v0.1.0).
+            description: Описание релиза.
+            release_url: URL репозитория (для логирования).
+
+        Returns:
+            (успех, сообщение).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+        if not self.last_repo_full_name:
+            return False, "Репозиторий не опубликован в этой сессии"
+
+        try:
+            repo = _safe_github_call(self.github.get_repo, self.last_repo_full_name)
+            release_name = f"Release {tag}"
+            _safe_github_call(
+                repo.create_git_tag_and_release,
+                tag,
+                tag_message=f"Version {tag}",
+                release_name=release_name,
+                release_message=description or f"Выпуск {tag}",
+            )
+            logger.info(f"Тег и релиз '{tag}' созданы в {self.last_repo_full_name}.")
+            return True, f"Тег '{tag}' и релиз созданы."
+        except GithubException as exc:
+            logger.info(f"Ошибка создания тега/релиза '{tag}': {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
+
+    def _resolve_full_name(self, name: str) -> str:
+        """Разрешает короткое имя репозитория в owner/repo.
+
+        Если в имени уже есть слэш, возвращает как есть. Иначе получает логин
+        аутентифицированного пользователя и формирует login/name.
+        """
+        if "/" in name:
+            return name
+        if not self.github:
+            return name
+        try:
+            user = self.github.get_user()
+            user.login  # forces API call
+            return f"{user.login}/{name}"
+        except GithubException:
+            return name
+
+    def get_tags(self, full_name: str) -> Tuple[bool, list[dict[str, str]] | str]:
+        """Получает список тегов репозитория.
+
+        Args:
+            full_name: Полное имя репозитория (owner/repo) или короткое имя.
+
+        Returns:
+            (успех, список тегов или сообщение об ошибке).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+
+        full_name = self._resolve_full_name(full_name)
+        try:
+            repo = _safe_github_call(self.github.get_repo, full_name)
+            tags = []
+            for tag in repo.get_tags():
+                tags.append({
+                    "name": tag.name,
+                    "sha": tag.commit.sha if tag.commit else "",
+                })
+            logger.info(f"Получено {len(tags)} тегов для {full_name}.")
+            return True, tags
+        except GithubException as exc:
+            logger.info(f"Ошибка получения тегов для {full_name}: {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
+
+    def get_release(self, full_name: str, tag: str) -> Tuple[bool, dict[str, str] | str]:
+        """Получает информацию о релизе по тегу.
+
+        Args:
+            full_name: Полное имя репозитория (owner/repo) или короткое имя.
+            tag: Имя тега релиза.
+
+        Returns:
+            (успех, данные релиза или сообщение об ошибке).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+
+        full_name = self._resolve_full_name(full_name)
+        try:
+            repo = _safe_github_call(self.github.get_repo, full_name)
+            release = _safe_github_call(repo.get_release, tag)
+            return True, {
+                "tag_name": release.tag_name,
+                "name": release.title or release.tag_name,
+                "body": release.body or "",
+                "html_url": release.html_url,
+                "published_at": str(release.published_at) if release.published_at else "",
+                "assets": [
+                    {"name": a.name, "url": a.browser_download_url, "size": a.size}
+                    for a in release.get_assets()
+                ],
+            }
+        except GithubException as exc:
+            logger.info(f"Ошибка получения релиза {tag} для {full_name}: {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
+
+    def update_release_body(
+        self,
+        full_name: str,
+        tag: str,
+        body: str,
+    ) -> Tuple[bool, str]:
+        """Обновляет описание (ChangeLog) существующего релиза.
+
+        Args:
+            full_name: Полное имя репозитория (owner/repo) или короткое имя.
+            tag: Имя тега релиза.
+            body: Новый текст описания в формате Markdown.
+
+        Returns:
+            (успех, сообщение).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+
+        full_name = self._resolve_full_name(full_name)
+        try:
+            repo = _safe_github_call(self.github.get_repo, full_name)
+            release = _safe_github_call(repo.get_release, tag)
+            _safe_github_call(release.update_release, name=release.title or tag, body=body)
+            logger.info(f"Описание релиза '{tag}' обновлено в {full_name}.")
+            return True, f"ChangeLog релиза '{tag}' обновлён."
+        except GithubException as exc:
+            logger.info(f"Ошибка обновления описания релиза '{tag}': {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
+
+    def upload_release_asset(
+        self,
+        full_name: str,
+        tag: str,
+        file_path: str,
+        asset_name: str | None = None,
+    ) -> Tuple[bool, str]:
+        """Загружает файл (asset) на существующий релиз.
+
+        Args:
+            full_name: Полное имя репозитория (owner/repo) или короткое имя.
+            tag: Имя тега релиза.
+            file_path: Локальный путь к файлу.
+            asset_name: Имя для отображения на GitHub (по умолчанию имя файла).
+
+        Returns:
+            (успех, сообщение).
+        """
+        if not self.github:
+            return False, "Клиент PyGithub не инициализирован"
+
+        full_name = self._resolve_full_name(full_name)
+        path = Path(file_path)
+        if not path.is_file():
+            return False, f"Файл не найден: {path}"
+
+        try:
+            repo = _safe_github_call(self.github.get_repo, full_name)
+            release = _safe_github_call(repo.get_release, tag)
+            name = asset_name or path.name
+            import mimetypes
+            content_type, _ = mimetypes.guess_type(str(path))
+            content_type = content_type or "application/octet-stream"
+            _safe_github_call(
+                release.upload_asset,
+                str(path),
+                content_type=content_type,
+                name=name,
+            )
+            logger.info(f"Файл '{name}' загружен на релиз '{tag}' в {full_name}.")
+            return True, f"Файл '{name}' загружен на релиз '{tag}'."
+        except GithubException as exc:
+            logger.info(f"Ошибка загрузки файла на релиз '{tag}': {exc}")
+            return False, f"Ошибка GitHub API ({exc.status}): {exc}"
 
     @staticmethod
     def _run_git(
@@ -371,9 +610,12 @@ class GitHubManager:
 
         При превышении таймаута команда прерывается и логируется как ошибка,
         чтобы приложение не висело бесконечно (например, на git push без сети).
+        На Windows скрывает всплывающее консольное окно git.
         """
         cmd = ["git"] + args
         log(f"$ {' '.join(cmd)}")
+        # На Windows скрываем консольное окно git, иначе оно мигает при каждой команде.
+        creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         try:
             result = subprocess.run(
                 cmd,
@@ -382,6 +624,7 @@ class GitHubManager:
                 text=True,
                 check=check,
                 timeout=timeout,
+                creationflags=creationflags,
             )
             if result.stdout.strip():
                 log(result.stdout.strip())

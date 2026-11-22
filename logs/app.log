@@ -293,3 +293,462 @@ M  static/script.js
 22:10:36 [INFO] Генерация README.md...
 22:10:36 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
 22:10:36 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:11:27 [INFO] Выбрана папка: D:/program/PortfolioForge/venv
+22:11:30 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:11:34 [INFO] === Начало публикации ===
+22:11:34 [INFO] Генерация README.md...
+22:11:34 [INFO] README.md сохранён (отредактированный): D:\program\PortfolioForge\README.md
+22:11:34 [INFO] Проверка токена GitHub...
+22:11:34 [INFO] Проверка токена GitHub...
+22:11:35 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:11:35 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:11:36 [INFO] Репозиторий 'qwexhausted21/PortfolioForge' уже найден.
+22:11:36 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+22:11:37 [INFO] Видимость репозитория обновлена: публичный
+22:11:37 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+22:11:37 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+22:11:37 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+22:11:37 [INFO] Инициализация локального репозитория Git (git init)...
+22:11:37 [INFO] Инициализация локального репозитория Git (git init)...
+22:11:37 [INFO] $ git init
+22:11:37 [INFO] Reinitialized existing Git repository in D:/program/PortfolioForge/.git/
+22:11:37 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:11:37 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:11:37 [INFO] $ git config user.name PortfolioForge
+22:11:37 [INFO] $ git config user.email portfolioforge@localhost
+22:11:37 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+22:11:37 [INFO] Исключение .env из отслеживания Git (защита токена)...
+22:11:37 [INFO] $ git rm --cached --ignore-unmatch .env
+22:11:37 [INFO] Добавление всех файлов в индекс (git add -A)...
+22:11:37 [INFO] $ git add -A
+22:11:37 [INFO] warning: in the working copy of 'static/script.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/index.html', LF will be replaced by CRLF the next time Git touches it
+22:11:37 [INFO] $ git status --porcelain
+22:11:37 [INFO] M  app.py
+M  github_manager.py
+MM logs/app.log
+M  static/script.js
+M  static/style.css
+M  templates/index.html
+22:11:37 [INFO] Создание коммита...
+22:11:37 [INFO] Создание коммита...
+22:11:37 [INFO] $ git commit -m Initial commit
+22:11:38 [INFO] [main d71eba2] Initial commit
+ 6 files changed, 168 insertions(+), 9 deletions(-)
+22:11:38 [INFO] Переключение на ветку experemental...
+22:11:38 [INFO] Переключение на ветку experemental...
+22:11:38 [INFO] $ git branch -M experemental
+22:11:38 [INFO] Добавление удалённого репозитория origin...
+22:11:38 [INFO] Добавление удалённого репозитория origin...
+22:11:38 [INFO] $ git remote remove origin
+22:11:38 [INFO] $ git remote add origin https://github.com/qwexhausted21/PortfolioForge.git
+22:11:38 [INFO] Отправка кода на GitHub (git push -u origin experemental)...
+22:11:38 [INFO] Отправка кода на GitHub (git push -u origin experemental)...
+22:11:38 [INFO] $ git push -u origin experemental
+22:11:57 [INFO] branch 'experemental' set up to track 'origin/experemental'.
+22:11:57 [INFO] remote: 
+remote: Create a pull request for 'experemental' on GitHub by visiting:        
+remote:      https://github.com/qwexhausted21/PortfolioForge/pull/new/experemental        
+remote: 
+To https://github.com/qwexhausted21/PortfolioForge.git
+ * [new branch]      experemental -> experemental
+22:11:57 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+22:11:57 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+22:11:57 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+22:11:57 [INFO] Опубликовано: https://github.com/qwexhausted21/PortfolioForge
+22:11:57 [INFO] Репозиторий добавлен в список сохранённых.
+22:15:00 [INFO] === Начало публикации ===
+22:15:00 [INFO] Генерация README.md...
+22:15:00 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:15:00 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:15:00 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:18:17 [INFO] === Начало публикации ===
+22:18:17 [INFO] Генерация README.md...
+22:18:18 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:18:18 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:18:18 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:23:21 [INFO] === Начало публикации ===
+22:23:21 [INFO] Генерация README.md...
+22:23:21 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:23:21 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:23:21 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:24:04 [INFO] === Начало публикации ===
+22:24:04 [INFO] Генерация README.md...
+22:24:04 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:24:04 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:24:04 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:24:04 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:26:09 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:26:17 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:30:09 [INFO] === Начало публикации ===
+22:30:09 [INFO] Генерация README.md...
+22:30:09 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:30:09 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:30:09 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:30:09 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:33:17 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:33:25 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:33:36 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:33:39 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:35:36 [INFO] === Начало публикации ===
+22:35:36 [INFO] Генерация README.md...
+22:35:36 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:35:37 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:35:37 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:35:37 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:37:43 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:37:54 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:39:05 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:39:06 [INFO] Ошибка получения тегов для PortfolioForge: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest", "status": "404"}
+22:42:35 [INFO] === Начало публикации ===
+22:42:35 [INFO] Генерация README.md...
+22:42:35 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:42:35 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:42:35 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:42:35 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:44:28 [INFO] Выбрана папка: D:/medCourse-hub-bot
+22:44:45 [INFO] Выбрана папка: D:/medCourse-hub-bot
+22:44:55 [INFO] === Начало публикации ===
+22:44:55 [INFO] Генерация README.md...
+22:44:55 [INFO] README.md сохранён (отредактированный): D:\medCourse-hub-bot\README.md
+22:44:55 [INFO] Проверка токена GitHub...
+22:44:55 [INFO] Проверка токена GitHub...
+22:44:56 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:44:56 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:44:56 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+22:44:56 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:44:57 [INFO] Видимость репозитория обновлена: приватный
+22:44:57 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:44:57 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:44:57 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+22:44:57 [INFO] Инициализация локального репозитория Git (git init)...
+22:44:57 [INFO] Инициализация локального репозитория Git (git init)...
+22:44:57 [INFO] $ git init
+22:44:57 [INFO] Reinitialized existing Git repository in D:/medCourse-hub-bot/.git/
+22:44:57 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:44:57 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:44:57 [INFO] $ git config user.name PortfolioForge
+22:44:57 [INFO] fatal: not in a git directory
+22:44:57 [INFO] ОШИБКА: Command '['git', 'config', 'user.name', 'PortfolioForge']' returned non-zero exit status 128.
+22:44:57 [INFO] Критическая ошибка публикации: Command '['git', 'config', 'user.name', 'PortfolioForge']' returned non-zero exit status 128.
+22:46:36 [INFO] Пользователь запросил отмену публикации.
+22:48:22 [INFO] === Начало публикации ===
+22:48:22 [INFO] Генерация README.md...
+22:48:22 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:48:22 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:48:22 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:48:22 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:49:20 [INFO] Выбрана папка: D:/medCourse-hub-bot
+22:49:25 [INFO] === Начало публикации ===
+22:49:25 [INFO] Генерация README.md...
+22:49:25 [INFO] README.md сохранён (отредактированный): D:\medCourse-hub-bot\README.md
+22:49:25 [INFO] Проверка токена GitHub...
+22:49:25 [INFO] Проверка токена GitHub...
+22:49:28 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:49:28 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:49:28 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+22:49:28 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:49:29 [INFO] Видимость репозитория обновлена: приватный
+22:49:29 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:49:29 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:49:29 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+22:49:29 [INFO] Инициализация локального репозитория Git (git init)...
+22:49:29 [INFO] Инициализация локального репозитория Git (git init)...
+22:49:29 [INFO] $ git init
+22:49:29 [INFO] Reinitialized existing Git repository in D:/medCourse-hub-bot/.git/
+22:49:29 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:49:29 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:49:29 [INFO] $ git config user.name PortfolioForge
+22:49:29 [INFO] fatal: not in a git directory
+22:49:29 [INFO] $ git config user.email portfolioforge@localhost
+22:49:30 [INFO] fatal: not in a git directory
+22:49:30 [INFO] Предупреждение: не удалось настроить локальную идентичность Git. Продолжаю без неё.
+22:49:30 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+22:49:30 [INFO] Исключение .env из отслеживания Git (защита токена)...
+22:49:30 [INFO] $ git rm --cached --ignore-unmatch .env
+22:49:30 [INFO] fatal: detected dubious ownership in repository at 'D:/medCourse-hub-bot'
+'D:/medCourse-hub-bot' is owned by:
+	(inconvertible) (S-1-5-21-330529225-1142552386-515592713-1001)
+but the current user is:
+	DESKTOP-OBN7MO2/Dunay (S-1-5-21-1097871644-421097093-1415142644-1000)
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory D:/medCourse-hub-bot
+22:49:30 [INFO] Добавление всех файлов в индекс (git add -A)...
+22:49:30 [INFO] $ git add -A
+22:49:30 [INFO] fatal: detected dubious ownership in repository at 'D:/medCourse-hub-bot'
+'D:/medCourse-hub-bot' is owned by:
+	(inconvertible) (S-1-5-21-330529225-1142552386-515592713-1001)
+but the current user is:
+	DESKTOP-OBN7MO2/Dunay (S-1-5-21-1097871644-421097093-1415142644-1000)
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory D:/medCourse-hub-bot
+22:49:30 [INFO] ОШИБКА: Command '['git', 'add', '-A']' returned non-zero exit status 128.
+22:49:30 [INFO] Критическая ошибка публикации: Command '['git', 'add', '-A']' returned non-zero exit status 128.
+22:50:29 [INFO] === Начало публикации ===
+22:50:29 [INFO] Генерация README.md...
+22:50:29 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:50:29 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:50:29 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:50:29 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:51:14 [INFO] Выбрана папка: D:/medCourse-hub-bot
+22:51:19 [INFO] === Начало публикации ===
+22:51:19 [INFO] Генерация README.md...
+22:51:19 [INFO] README.md сохранён (отредактированный): D:\medCourse-hub-bot\README.md
+22:51:19 [INFO] $ git config --global --add safe.directory D:\medCourse-hub-bot
+22:51:19 [INFO] Проверка токена GitHub...
+22:51:19 [INFO] Проверка токена GitHub...
+22:51:23 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:51:23 [INFO] Токен валиден. Пользователь: qwexhausted21
+22:51:23 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+22:51:23 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:24 [INFO] Видимость репозитория обновлена: приватный
+22:51:24 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:24 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:24 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+22:51:24 [INFO] Инициализация локального репозитория Git (git init)...
+22:51:24 [INFO] Инициализация локального репозитория Git (git init)...
+22:51:24 [INFO] $ git init
+22:51:24 [INFO] Reinitialized existing Git repository in D:/medCourse-hub-bot/.git/
+22:51:24 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:51:24 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+22:51:24 [INFO] $ git config user.name PortfolioForge
+22:51:24 [INFO] $ git config user.email portfolioforge@localhost
+22:51:24 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+22:51:24 [INFO] Исключение .env из отслеживания Git (защита токена)...
+22:51:24 [INFO] $ git rm --cached --ignore-unmatch .env
+22:51:25 [INFO] Добавление всех файлов в индекс (git add -A)...
+22:51:25 [INFO] $ git add -A
+22:51:25 [INFO] $ git status --porcelain
+22:51:25 [INFO] M  .gitignore
+A  bot.db
+22:51:25 [INFO] Создание коммита...
+22:51:25 [INFO] Создание коммита...
+22:51:25 [INFO] $ git commit -m Initial commit
+22:51:25 [INFO] [main bba3d3a] Initial commit
+ 2 files changed, 7 insertions(+), 18 deletions(-)
+ create mode 100644 bot.db
+22:51:25 [INFO] Переключение на ветку main...
+22:51:25 [INFO] Переключение на ветку main...
+22:51:25 [INFO] $ git branch -M main
+22:51:25 [INFO] Добавление удалённого репозитория origin...
+22:51:25 [INFO] Добавление удалённого репозитория origin...
+22:51:25 [INFO] $ git remote remove origin
+22:51:26 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+22:51:26 [INFO] Отправка кода на GitHub (git push -u origin main)...
+22:51:26 [INFO] Отправка кода на GitHub (git push -u origin main)...
+22:51:26 [INFO] $ git push -u origin main
+22:51:31 [INFO] branch 'main' set up to track 'origin/main'.
+22:51:31 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+   c4ddf77..bba3d3a  main -> main
+22:51:31 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:31 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:31 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:31 [INFO] Опубликовано: https://github.com/qwexhausted21/medCourse-hub-bot
+22:51:31 [INFO] Репозиторий добавлен в список сохранённых.
+22:52:38 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:54:27 [INFO] === Начало публикации ===
+22:54:27 [INFO] Генерация README.md...
+22:54:27 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:54:27 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:54:27 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:54:27 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+22:58:49 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:58:55 [INFO] Выбрана папка: D:/program/PortfolioForge
+22:59:45 [INFO] === Начало публикации ===
+22:59:45 [INFO] Генерация README.md...
+22:59:45 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+22:59:45 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+22:59:45 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+22:59:45 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+23:02:32 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+23:02:37 [INFO] Получено 0 тегов для qwexhausted21/medCourse-hub-bot.
+23:02:38 [INFO] Получено 0 тегов для qwexhausted21/medCourse-hub-bot.
+23:02:43 [INFO] Получено 0 тегов для qwexhausted21/medCourse-hub-bot.
+23:02:54 [INFO] === Начало публикации ===
+23:02:54 [INFO] Генерация README.md...
+23:02:54 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+23:02:54 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+23:02:54 [INFO] Проверка токена GitHub...
+23:02:54 [INFO] Проверка токена GitHub...
+23:02:54 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:02:54 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:02:55 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+23:02:55 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:02:55 [INFO] Видимость репозитория обновлена: приватный
+23:02:55 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:02:55 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:02:55 [INFO] Инициализация локального репозитория Git (git init)...
+23:02:55 [INFO] Инициализация локального репозитория Git (git init)...
+23:02:55 [INFO] $ git init
+23:02:56 [INFO] Initialized empty Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+23:02:56 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:02:56 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:02:56 [INFO] $ git config user.name PortfolioForge
+23:02:56 [INFO] $ git config user.email portfolioforge@localhost
+23:02:56 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+23:02:56 [INFO] Исключение .env из отслеживания Git (защита токена)...
+23:02:56 [INFO] $ git rm --cached --ignore-unmatch .env
+23:02:56 [INFO] Добавление всех файлов в индекс (git add -A)...
+23:02:56 [INFO] $ git add -A
+23:02:58 [INFO] warning: in the working copy of '.env.example', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.vscode/settings.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'AUDIT_FINDINGS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'amvera.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/database.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/handlers/admin.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/handlers/manual.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/handlers/user.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/keyboards.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/main_state.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/payments.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/tracker.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/webhook.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'requirements.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_money.py', LF will be replaced by CRLF the next time Git touches it
+23:02:58 [INFO] $ git status --porcelain
+23:02:58 [INFO] A  .env.example
+A  .gitignore
+A  .vscode/settings.json
+A  AUDIT_FINDINGS.md
+A  README.md
+A  amvera.yml
+A  app/__init__.py
+A  app/config.py
+A  app/database.py
+A  app/handlers/__init__.py
+A  app/handlers/admin.py
+A  app/handlers/manual.py
+A  app/handlers/user.py
+A  app/keyboards.py
+A  app/main_state.py
+A  app/payments.py
+A  app/tracker.py
+A  app/webhook.py
+A  bot.db
+A  images/buy.jpg
+A  images/profile.jpg
+A  images/welcome.jpg
+A  main.py
+A  requirements.txt
+A  tests/test_money.py
+23:02:58 [INFO] Создание коммита...
+23:02:58 [INFO] Создание коммита...
+23:02:58 [INFO] $ git commit -m Initial commit
+23:02:58 [INFO] [master (root-commit) 5e0b302] Initial commit
+ 25 files changed, 3250 insertions(+)
+ create mode 100644 .env.example
+ create mode 100644 .gitignore
+ create mode 100644 .vscode/settings.json
+ create mode 100644 AUDIT_FINDINGS.md
+ create mode 100644 README.md
+ create mode 100644 amvera.yml
+ create mode 100644 app/__init__.py
+ create mode 100644 app/config.py
+ create mode 100644 app/database.py
+ create mode 100644 app/handlers/__init__.py
+ create mode 100644 app/handlers/admin.py
+ create mode 100644 app/handlers/manual.py
+ create mode 100644 app/handlers/user.py
+ create mode 100644 app/keyboards.py
+ create mode 100644 app/main_state.py
+ create mode 100644 app/payments.py
+ create mode 100644 app/tracker.py
+ create mode 100644 app/webhook.py
+ create mode 100644 bot.db
+ create mode 100644 images/buy.jpg
+ create mode 100644 images/profile.jpg
+ create mode 100644 images/welcome.jpg
+ create mode 100644 main.py
+ create mode 100644 requirements.txt
+ create mode 100644 tests/test_money.py
+23:02:58 [INFO] Переключение на ветку main...
+23:02:58 [INFO] Переключение на ветку main...
+23:02:58 [INFO] $ git branch -M main
+23:02:59 [INFO] Добавление удалённого репозитория origin...
+23:02:59 [INFO] Добавление удалённого репозитория origin...
+23:02:59 [INFO] $ git remote remove origin
+23:02:59 [INFO] error: No such remote: 'origin'
+23:02:59 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+23:02:59 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:02:59 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:02:59 [INFO] $ git push -u origin main
+23:03:01 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/qwexhausted21/medCourse-hub-bot.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+23:03:01 [INFO] ОШИБКА: Конфликт пуша — на GitHub есть новые изменения.
+23:03:01 [INFO] ОШИБКА: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:03:01 [INFO] Конфликт пуша: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:03:50 [INFO] Пользователь запросил отмену публикации.
+23:11:57 [INFO] === Начало публикации ===
+23:11:57 [INFO] Генерация README.md...
+23:11:57 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+23:11:57 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+23:11:57 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+23:11:57 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+23:39:34 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+23:39:38 [INFO] === Начало публикации ===
+23:39:38 [INFO] Генерация README.md...
+23:39:38 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+23:39:38 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+23:39:38 [INFO] Проверка токена GitHub...
+23:39:38 [INFO] Проверка токена GitHub...
+23:39:38 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:39:38 [INFO] Токен валиден. Пользователь: qwexhausted21
+23:39:39 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+23:39:39 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:39:39 [INFO] Видимость репозитория обновлена: приватный
+23:39:39 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:39:39 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+23:39:39 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+23:39:39 [INFO] Инициализация локального репозитория Git (git init)...
+23:39:39 [INFO] Инициализация локального репозитория Git (git init)...
+23:39:39 [INFO] $ git init
+23:39:40 [INFO] Reinitialized existing Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+23:39:40 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:39:40 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+23:39:40 [INFO] $ git config user.name PortfolioForge
+23:39:40 [INFO] $ git config user.email portfolioforge@localhost
+23:39:40 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+23:39:40 [INFO] Исключение .env из отслеживания Git (защита токена)...
+23:39:40 [INFO] $ git rm --cached --ignore-unmatch .env
+23:39:40 [INFO] Добавление всех файлов в индекс (git add -A)...
+23:39:40 [INFO] $ git add -A
+23:39:40 [INFO] $ git status --porcelain
+23:39:40 [INFO] Нет изменений для коммита — пропускаю создание коммита.
+23:39:40 [INFO] Переключение на ветку main...
+23:39:40 [INFO] Переключение на ветку main...
+23:39:40 [INFO] $ git branch -M main
+23:39:40 [INFO] Добавление удалённого репозитория origin...
+23:39:40 [INFO] Добавление удалённого репозитория origin...
+23:39:40 [INFO] $ git remote remove origin
+23:39:40 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+23:39:40 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:39:40 [INFO] Отправка кода на GitHub (git push -u origin main)...
+23:39:40 [INFO] $ git push -u origin main
+23:39:42 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/qwexhausted21/medCourse-hub-bot.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+23:39:42 [INFO] ОШИБКА: Конфликт пуша — на GitHub есть новые изменения.
+23:39:42 [INFO] ОШИБКА: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:39:42 [INFO] Конфликт пуша: На GitHub есть изменения, которых нет локально. Нужно сначала слить их или выполнить force push.
+23:40:33 [INFO] === Начало публикации ===
+23:40:33 [INFO] Генерация README.md...
+23:40:33 [INFO] Критическая ошибка публикации: [Errno 2] No such file or directory: '\\tmp\\somefolder\\README.md'
+23:40:33 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
+23:40:33 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
+23:40:33 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.

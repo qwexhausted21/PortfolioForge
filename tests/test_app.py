@@ -214,6 +214,31 @@ class TestEndpoints:
             data = response.json()
             assert data["ok"] is True
 
+    def test_delete_github_repo_endpoint(self, client, temp_repos_file):
+        """Test delete-github endpoint removes repo from GitHub and library."""
+        with patch("app.REPOS_FILE", Path(temp_repos_file)):
+            _save_repos([{"name": "todelete", "full_name": "user/todelete", "url": "https://github.com/user/todelete"}])
+            with patch("app.GitHubManager") as mock_manager_class:
+                mock_manager = Mock()
+                mock_manager_class.return_value = mock_manager
+                mock_manager.delete_repo.return_value = (True, "Репозиторий 'user/todelete' удалён с GitHub.")
+
+                response = client.delete("/repos/todelete/delete-github")
+                assert response.status_code == 200
+                data = response.json()
+                assert data["ok"] is True
+                mock_manager.delete_repo.assert_called_once_with("user/todelete")
+
+                # Репозиторий должен быть удалён из локальной библиотеки
+                repos = _load_repos()
+                assert len(repos) == 0
+
+    def test_delete_github_repo_endpoint_not_found(self, client, temp_repos_file):
+        """Test delete-github endpoint returns 404 when repo not in library."""
+        with patch("app.REPOS_FILE", Path(temp_repos_file)):
+            response = client.delete("/repos/nonexistent/delete-github")
+            assert response.status_code == 404
+
     def test_last_folder_endpoint(self, client, temp_repos_file):
         """Test last-folder endpoint returns saved folder."""
         with patch("app.LAST_FOLDER_FILE", Path(temp_repos_file)):

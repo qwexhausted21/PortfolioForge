@@ -163,6 +163,43 @@ class TestRunGitTimeout:
             except subprocess.TimeoutExpired:
                 pass
 
+class TestCreateRelease:
+    """Tests for create_release method."""
+
+    def test_create_release_no_github_client(self):
+        """Test create_release returns error when github client is not initialized."""
+        manager = GitHubManager(env_path="/tmp/.env")
+        manager.github = None
+        ok, msg = manager.create_release("v0.1.0", "Test release")
+        assert ok is False
+        assert "не инициализирован" in msg.lower()
+
+    def test_create_release_no_published_repo(self):
+        """Test create_release returns error when no repo was published in session."""
+        manager = GitHubManager(env_path="/tmp/.env")
+        manager.github = Mock()
+        manager.last_repo_full_name = None
+        ok, msg = manager.create_release("v0.1.0", "Test release")
+        assert ok is False
+        assert "не опубликован" in msg.lower()
+
+    def test_create_release_success(self):
+        """Test successful release creation."""
+        from unittest.mock import Mock
+        manager = GitHubManager(env_path="/tmp/.env")
+        manager.github = Mock()
+        manager.last_repo_full_name = "user/testrepo"
+
+        mock_repo = Mock()
+        manager.github.get_repo.return_value = mock_repo
+
+        ok, msg = manager.create_release("v0.1.0", "First release")
+        assert ok is True
+        assert "созданы" in msg.lower()
+        manager.github.get_repo.assert_called_once_with("user/testrepo")
+        mock_repo.create_git_tag_and_release.assert_called_once()
+
+
 class TestGitPushConflictError:
     """Tests for GitPushConflictError exception."""
 

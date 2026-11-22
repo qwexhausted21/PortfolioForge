@@ -1,6 +1,6 @@
 ([('.env.example', 'D:\\program\\PortfolioForge\\.env.example', 'DATA'),
-  ('PortfolioForge-v0.4.0-beta.exe',
-   'D:\\program\\PortfolioForge\\dist\\PortfolioForge-v0.4.0-beta.exe',
+  ('PortfolioForge-v0.6.0-beta.exe',
+   'D:\\program\\PortfolioForge\\dist\\PortfolioForge-v0.6.0-beta.exe',
    'EXECUTABLE'),
   ('VCRUNTIME140.dll',
    'C:\\Users\\Dunay\\AppData\\Local\\Programs\\Python\\Python314\\VCRUNTIME140.dll',

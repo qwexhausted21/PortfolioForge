@@ -77,6 +77,11 @@
                     <input id="repoBranch" value="main" placeholder="main" pattern="^[A-Za-z0-9_.\-/]+$" title="Латинские буквы, цифры, точки, дефисы, подчёркивания и слэши">
                     <p class="hint" id="branchHint">По умолчанию — main.</p>
                 </div>
+                <div class="release-field">
+                    <label class="release-checkbox"><input type="checkbox" id="createRelease"> <span>Создать тег и релиз</span></label>
+                    <div class="release-version"><label for="repoTag">Версия (тег)</label><input id="repoTag" value="v0.1.0" placeholder="v0.1.0" pattern="^[A-Za-z0-9_.\-]+$" title="Например, v0.1.0"><button type="button" id="viewTagsBtn">Посмотреть теги</button></div>
+                    <p class="hint" id="tagHint">Тег создаётся после успешной публикации.</p>
+                </div>
                 <label class="update"><input type="checkbox" id="updateExisting"> <span>Разрешить обновление существующего репозитория<small>Его видимость не изменится.</small></span></label>
                 <div class="readme-row">
                     <span class="document-mark"><svg><use href="#i-doc"/></svg></span>
@@ -128,6 +133,52 @@
             </div>
             <p id="readmeResult" class="message" role="status" hidden></p>
             <div class="dialog-actions"><button type="button" class="button" id="generateReadmeBtn">Сгенерировать заново</button><button type="button" class="button primary" id="saveReadmeBtn">Использовать этот текст</button></div>
+        </div>
+    </dialog>
+
+    <dialog id="releaseModal" class="editor-dialog" aria-labelledby="releaseTitle">
+        <div class="dialog-inner">
+            <header class="dialog-header"><h2 id="releaseTitle">Теги и релизы</h2><button type="button" class="icon-button" data-close aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></header>
+            <p class="hint">Управляйте тегами, ChangeLog и файлами релиза выбранного репозитория.</p>
+            <div id="releaseRepoInfo" class="message" role="status" hidden></div>
+            <div class="release-tabs">
+                <button type="button" class="tab-button active" id="releaseTabTags" data-tab="tags">Теги</button>
+                <button type="button" class="tab-button" id="releaseTabChangelog" data-tab="changelog">ChangeLog</button>
+                <button type="button" class="tab-button" id="releaseTabAssets" data-tab="assets">Файлы релиза</button>
+            </div>
+            <div id="releaseTagsView">
+                <p id="releaseTagsResult" class="message" role="status" hidden></p>
+                <div id="releaseTagsList"></div>
+            </div>
+            <div id="releaseChangelogView" hidden>
+                <label for="releaseChangelogEditor">Описание релиза (Markdown)</label>
+                <textarea id="releaseChangelogEditor" rows="10" spellcheck="false"></textarea>
+                <p id="releaseChangelogResult" class="message" role="status" hidden></p>
+                <div class="dialog-actions"><button type="button" class="button" id="releaseChangelogSaveBtn">Сохранить ChangeLog</button></div>
+            </div>
+            <div id="releaseAssetsView" hidden>
+                <p id="releaseAssetsResult" class="message" role="status" hidden></p>
+                <div id="releaseAssetsList"></div>
+                <div class="release-upload">
+                    <label for="releaseAssetFile">Файл для загрузки</label>
+                    <input id="releaseAssetFile" type="file">
+                    <label for="releaseAssetName">Имя на GitHub (опционально)</label>
+                    <input id="releaseAssetName" type="text" placeholder="example.zip">
+                    <div class="dialog-actions"><button type="button" class="button primary" id="releaseAssetUploadBtn">Загрузить файл</button></div>
+                </div>
+            </div>
+            <div class="dialog-actions"><button type="button" class="button" id="releaseRefreshBtn">Обновить</button><button type="button" class="button" data-close>Закрыть</button></div>
+        </div>
+    </dialog>
+
+    <dialog id="pushConflictModal" class="dialog-inner" style="width: min(460px, calc(100% - 24px));">
+        <div class="dialog-inner">
+            <header class="dialog-header"><h2>Конфликт пуша</h2><button type="button" class="icon-button" data-close aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></header>
+            <p class="hint" id="pushConflictMessage">На GitHub есть изменения, которых нет локально. Выберите действие:</p>
+            <div class="dialog-actions" style="justify-content: center; gap: 12px;">
+                <button type="button" class="button" id="pushConflictMergeBtn">Слить изменения (merge)</button>
+                <button type="button" class="button primary" id="pushConflictForceBtn">Перезаписать (force push)</button>
+            </div>
         </div>
     </dialog>
 

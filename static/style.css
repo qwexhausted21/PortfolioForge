@@ -79,6 +79,15 @@ textarea { resize: vertical; }
 .update small { display: block; color: var(--muted); font-size: 12px; }
 .branch-field { margin-top: 12px; }
 .branch-field label { display: block; margin: 11px 0 4px; font-size: 13px; font-weight: 650; }
+.release-field { margin-top: 12px; padding: 12px; border: 1px dashed var(--line); border-radius: 8px; background: var(--lavender); }
+.release-checkbox { display: flex; align-items: start; gap: 7px; margin: 0 0 8px 0; font-size: 13px; font-weight: 650; cursor: pointer; }
+.release-checkbox input { margin-top: 2px; }
+.release-version { display: none; gap: 8px; align-items: center; margin-top: 6px; }
+.release-checkbox input:checked ~ .release-version,
+.release-checkbox:has(input:checked) ~ .release-version { display: flex; }
+.release-version label { font-size: 13px; font-weight: 650; white-space: nowrap; }
+.release-version button { margin-left: 8px; }
+[data-theme="dark"] .release-field { background: var(--white); border-color: var(--line); }
 .readme-row { margin-top: 15px; padding-block: 12px; border-block: 1px solid var(--line); }
 #publishBtn { width: 100%; margin-top: 15px; min-height: 44px; font-size: 14px; }
 .message { margin-top: 10px; overflow-wrap: anywhere; padding: 8px 10px; border-radius: 6px; font-size: 13px; background: var(--lavender); }
@@ -339,4 +348,144 @@ dialog::backdrop { background: #20233c66; }
 
 [data-theme="dark"] .preview-content a {
   color: #6d5dfc;
+}
+
+/* Модалка управления релизами */
+.release-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.release-tabs .tab-button {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.release-tabs .tab-button:hover {
+  color: var(--ink);
+  background: var(--lavender);
+}
+
+.release-tabs .tab-button.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+  background: var(--lavender);
+}
+
+.release-tag-item {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--white);
+}
+
+.release-tag-item .tag-name {
+  font-weight: 650;
+  color: var(--indigo);
+}
+
+.release-tag-item .tag-sha {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: Consolas, monospace;
+}
+
+.release-tag-item .tag-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.release-upload {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--lavender);
+}
+
+.release-upload label {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.release-asset-item {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.release-asset-item .asset-name {
+  font-weight: 650;
+  color: var(--indigo);
+}
+
+.release-asset-item .asset-size {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.release-asset-item a {
+  color: var(--indigo);
+}
+
+[data-theme="dark"] .release-tag-item,
+[data-theme="dark"] .release-asset-item {
+  background: var(--white);
+}
+
+[data-theme="dark"] .release-upload {
+  background: var(--white);
+  border-color: var(--line);
+}
+
+/* Скроллбар — адаптирован под тему */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 5px;
+  border: 2px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--indigo);
+}
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--line);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--indigo);
+}
+
+/* Скроллбар для Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) var(--paper);
+}
+[data-theme="dark"] * {
+  scrollbar-color: var(--line) var(--paper);
 }

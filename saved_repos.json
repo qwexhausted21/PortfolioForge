@@ -1,11 +1,20 @@
 [
   {
+    "name": "medCourse-hub-bot",
+    "full_name": "medCourse-hub-bot",
+    "description": "",
+    "url": "https://github.com/qwexhausted21/medCourse-hub-bot",
+    "folder_path": "G:\\BaoCode Projects\\medCourse-hub-bot",
+    "private": true,
+    "updated_at": "2026-11-22T23:48:09.916636"
+  },
+  {
     "name": "PortfolioForge",
     "full_name": "PortfolioForge",
     "description": "",
     "url": "https://github.com/qwexhausted21/PortfolioForge",
     "folder_path": "D:\\program\\PortfolioForge",
     "private": false,
-    "updated_at": "2026-11-22T21:36:31.685654"
+    "updated_at": "2026-11-22T22:11:57.810785"
   }
 ]
