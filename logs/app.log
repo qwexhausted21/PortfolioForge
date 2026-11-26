@@ -4452,3 +4452,418 @@ M  templates/index.html
 01:41:11 [INFO] GITHUB_TOKEN сохранён в .env и прошёл валидацию.
 01:41:11 [INFO] Репозиторий 'user/todelete' удалён с GitHub и из библиотеки.
 01:41:11 [INFO] Тег и релиз 'v0.1.0' созданы в user/testrepo.
+01:45:48 [INFO] Выбрана папка: D:/program/PortfolioForge
+01:45:54 [INFO] === Начало публикации ===
+01:45:54 [INFO] Генерация README.md...
+01:45:54 [INFO] README.md сохранён (отредактированный): D:\program\PortfolioForge\README.md
+01:45:54 [INFO] $ git config --global --add safe.directory D:\program\PortfolioForge
+01:45:54 [INFO] Проверка токена GitHub...
+01:45:54 [INFO] Проверка токена GitHub...
+01:45:55 [INFO] Токен валиден. Пользователь: qwexhausted21
+01:45:55 [INFO] Токен валиден. Пользователь: qwexhausted21
+01:45:55 [INFO] Репозиторий 'qwexhausted21/PortfolioForge' уже найден.
+01:45:55 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+01:45:56 [INFO] Видимость репозитория обновлена: публичный
+01:45:56 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+01:45:56 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/PortfolioForge
+01:45:56 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+01:45:56 [INFO] Инициализация локального репозитория Git (git init)...
+01:45:56 [INFO] Инициализация локального репозитория Git (git init)...
+01:45:56 [INFO] $ git init
+01:45:56 [INFO] Reinitialized existing Git repository in D:/program/PortfolioForge/.git/
+01:45:56 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+01:45:56 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+01:45:56 [INFO] $ git config user.name PortfolioForge
+01:45:56 [INFO] $ git config user.email portfolioforge@localhost
+01:45:56 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+01:45:56 [INFO] Исключение .env из отслеживания Git (защита токена)...
+01:45:56 [INFO] $ git rm --cached --ignore-unmatch .env
+01:45:56 [INFO] Добавление всех файлов в индекс (git add -A)...
+01:45:56 [INFO] $ git add -A
+01:46:05 [INFO] warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/certifi/cacert.pem', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/click-8.5.1.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/click-8.5.1.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/click-8.5.1.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/click-8.5.1.dist-info/licenses/LICENSE.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/licenses/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/licenses/LICENSE.APACHE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/licenses/LICENSE.BSD', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/cryptography-50.0.2.dist-info/sboms/cryptography-rust.cyclonedx.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/entry_points.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/licenses/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/email_validator-2.4.0.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/markupsafe-3.0.4.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/markupsafe-3.0.4.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/markupsafe-3.0.4.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pydantic-2.14.4.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pydantic-2.14.4.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pydantic-2.14.4.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pydantic-2.14.4.dist-info/licenses/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pythonnet/runtime/Python.Runtime.deps.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/pythonnet/runtime/Python.Runtime.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/setuptools/_vendor/jaraco/text/Lorem ipsum.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/static/script.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/static/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/templates/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/iso3166.tab', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/leapseconds', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/tzdata.zi', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/zone.tab', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/zone1970.tab', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zoneinfo/zonenow.tab', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/tzdata/zones', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/websockets-17.4.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/websockets-17.4.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/websockets-17.4.dist-info/entry_points.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/websockets-17.4.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/api.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/customize.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/finish.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/lib/dom_json.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/lib/polyfill.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'dist/PortfolioForge-v0.5.1-beta/_internal/webview/js/state.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_github_manager.py', LF will be replaced by CRLF the next time Git touches it
+01:46:05 [INFO] $ git status --porcelain
+01:46:06 [INFO] M  build/portfolio-forge/Analysis-00.toc
+M  build/portfolio-forge/EXE-00.toc
+M  build/portfolio-forge/PKG-00.toc
+M  build/portfolio-forge/PYZ-00.pyz
+M  build/portfolio-forge/PortfolioForge-v0.5.1-beta.pkg
+M  build/portfolio-forge/base_library.zip
+M  dist/PortfolioForge-v0.5.1-beta.exe
+M  dist/PortfolioForge-v0.5.1-beta/PortfolioForge-v0.5.1-beta.exe
+M  dist/PortfolioForge-v0.5.1-beta/_internal/base_library.zip
+M  github_manager.py
+MM logs/app.log
+M  saved_repos.json
+M  tests/test_github_manager.py
+01:46:06 [INFO] Создание коммита...
+01:46:06 [INFO] Создание коммита...
+01:46:06 [INFO] $ git commit -m Initial commit
+01:46:06 [INFO] [main 9e52efb] Initial commit
+ 13 files changed, 5838 insertions(+), 4165 deletions(-)
+01:46:06 [INFO] Переключение на ветку main...
+01:46:07 [INFO] Переключение на ветку main...
+01:46:07 [INFO] $ git branch -M main
+01:46:07 [INFO] Добавление удалённого репозитория origin...
+01:46:07 [INFO] Добавление удалённого репозитория origin...
+01:46:07 [INFO] $ git remote remove origin
+01:46:07 [INFO] $ git remote add origin https://github.com/qwexhausted21/PortfolioForge.git
+01:46:07 [INFO] Отправка кода на GitHub (git push -u origin main)...
+01:46:07 [INFO] Отправка кода на GitHub (git push -u origin main)...
+01:46:07 [INFO] $ git push -u origin main
+01:46:21 [INFO] branch 'main' set up to track 'origin/main'.
+01:46:21 [INFO] To https://github.com/qwexhausted21/PortfolioForge.git
+   8810160..9e52efb  main -> main
+01:46:21 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+01:46:21 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+01:46:21 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/PortfolioForge
+01:46:21 [INFO] Опубликовано: https://github.com/qwexhausted21/PortfolioForge
+01:46:21 [INFO] Репозиторий добавлен в список сохранённых.
+01:46:47 [INFO] Тег и релиз 'v0.5.1-beta' созданы в qwexhausted21/PortfolioForge.
+17:18:27 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+17:18:54 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+17:19:01 [INFO] === Начало публикации ===
+17:19:01 [INFO] Генерация README.md...
+17:19:01 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+17:19:01 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+17:19:02 [INFO] Проверка токена GitHub...
+17:19:02 [INFO] Проверка токена GitHub...
+17:19:02 [INFO] Токен валиден. Пользователь: qwexhausted21
+17:19:02 [INFO] Токен валиден. Пользователь: qwexhausted21
+17:19:03 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+17:19:03 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:03 [INFO] Видимость репозитория обновлена: приватный
+17:19:03 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:03 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:03 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+17:19:03 [INFO] Инициализация локального репозитория Git (git init)...
+17:19:03 [INFO] Инициализация локального репозитория Git (git init)...
+17:19:03 [INFO] $ git init
+17:19:04 [INFO] Reinitialized existing Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+17:19:04 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+17:19:04 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+17:19:04 [INFO] $ git config user.name PortfolioForge
+17:19:04 [INFO] $ git config user.email portfolioforge@localhost
+17:19:04 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+17:19:04 [INFO] Исключение .env из отслеживания Git (защита токена)...
+17:19:04 [INFO] $ git rm --cached --ignore-unmatch .env
+17:19:04 [INFO] Добавление всех файлов в индекс (git add -A)...
+17:19:04 [INFO] $ git add -A
+17:19:07 [INFO] warning: in the working copy of 'amvera.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/handlers/admin.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/keyboards.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/webhook.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_money.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/WORKFLOW.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/developer/DEV_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/developer/DEV_SYSTEM_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/orchestrator/ORCHESTRATOR_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/orchestrator/ORCHESTRATOR_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/orchestrator/RUN_LOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/qa/QA_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/qa/QA_SYSTEM_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/releases/RELEASE_MANAGER_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/releases/RELEASE_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/reviewer/REVIEW_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/reviewer/REVIEW_SYSTEM_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/security/SECURITY_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/security/SECURITY_SYSTEM_PROMPT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'AGENTS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'ARCHITECTURE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'AUTOMATION.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'PROJECT_MEMORY.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'QA_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README_AGENT_KIT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'RELEASE_CHECKLIST.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'SECURITY_CHECKLIST.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'TASK_BOARD.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'TEST_PLAN.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'WORKFLOW.md', LF will be replaced by CRLF the next time Git touches it
+17:19:07 [INFO] $ git status --porcelain
+17:19:08 [INFO] A  .agents/WORKFLOW.md
+A  .agents/developer/DEV_REPORT.md
+A  .agents/developer/DEV_SYSTEM_PROMPT.md
+A  .agents/developer/SYSTEM_PROMPT.md
+A  .agents/orchestrator/ORCHESTRATOR_PROMPT.md
+A  .agents/orchestrator/ORCHESTRATOR_REPORT.md
+A  .agents/orchestrator/RUN_LOG.md
+A  .agents/qa/QA_REPORT.md
+A  .agents/qa/QA_SYSTEM_PROMPT.md
+A  .agents/qa/SYSTEM_PROMPT.md
+A  .agents/releases/RELEASE_MANAGER_PROMPT.md
+A  .agents/releases/RELEASE_REPORT.md
+A  .agents/reviewer/REVIEW_REPORT.md
+A  .agents/reviewer/REVIEW_SYSTEM_PROMPT.md
+A  .agents/security/SECURITY_REPORT.md
+A  .agents/security/SECURITY_SYSTEM_PROMPT.md
+A  AGENTS.md
+A  ARCHITECTURE.md
+A  AUTOMATION.md
+A  CHANGELOG.md
+A  PROJECT_MEMORY.md
+A  QA_REPORT.md
+A  README_AGENT_KIT.md
+A  RELEASE_CHECKLIST.md
+A  SECURITY_CHECKLIST.md
+A  TASK_BOARD.md
+A  TEST_PLAN.md
+A  WORKFLOW.md
+M  amvera.yml
+M  app/config.py
+M  app/database.py
+M  app/handlers/admin.py
+M  app/handlers/user.py
+M  app/keyboards.py
+M  app/webhook.py
+M  bot.db
+A  bot_run.log
+M  main.py
+M  tests/test_money.py
+17:19:08 [INFO] Создание коммита...
+17:19:08 [INFO] Создание коммита...
+17:19:08 [INFO] $ git commit -m Initial commit
+17:19:09 [INFO] [main 8ef2da0] Initial commit
+ 39 files changed, 2521 insertions(+), 58 deletions(-)
+ create mode 100644 .agents/WORKFLOW.md
+ create mode 100644 .agents/developer/DEV_REPORT.md
+ create mode 100644 .agents/developer/DEV_SYSTEM_PROMPT.md
+ create mode 100644 .agents/developer/SYSTEM_PROMPT.md
+ create mode 100644 .agents/orchestrator/ORCHESTRATOR_PROMPT.md
+ create mode 100644 .agents/orchestrator/ORCHESTRATOR_REPORT.md
+ create mode 100644 .agents/orchestrator/RUN_LOG.md
+ create mode 100644 .agents/qa/QA_REPORT.md
+ create mode 100644 .agents/qa/QA_SYSTEM_PROMPT.md
+ create mode 100644 .agents/qa/SYSTEM_PROMPT.md
+ create mode 100644 .agents/releases/RELEASE_MANAGER_PROMPT.md
+ create mode 100644 .agents/releases/RELEASE_REPORT.md
+ create mode 100644 .agents/reviewer/REVIEW_REPORT.md
+ create mode 100644 .agents/reviewer/REVIEW_SYSTEM_PROMPT.md
+ create mode 100644 .agents/security/SECURITY_REPORT.md
+ create mode 100644 .agents/security/SECURITY_SYSTEM_PROMPT.md
+ create mode 100644 AGENTS.md
+ create mode 100644 ARCHITECTURE.md
+ create mode 100644 AUTOMATION.md
+ create mode 100644 CHANGELOG.md
+ create mode 100644 PROJECT_MEMORY.md
+ create mode 100644 QA_REPORT.md
+ create mode 100644 README_AGENT_KIT.md
+ create mode 100644 RELEASE_CHECKLIST.md
+ create mode 100644 SECURITY_CHECKLIST.md
+ create mode 100644 TASK_BOARD.md
+ create mode 100644 TEST_PLAN.md
+ create mode 100644 WORKFLOW.md
+ create mode 100644 bot_run.log
+17:19:10 [INFO] Переключение на ветку main...
+17:19:10 [INFO] Переключение на ветку main...
+17:19:10 [INFO] $ git branch -M main
+17:19:10 [INFO] Добавление удалённого репозитория origin...
+17:19:10 [INFO] Добавление удалённого репозитория origin...
+17:19:10 [INFO] $ git remote remove origin
+17:19:10 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+17:19:10 [INFO] Отправка кода на GitHub (git push -u origin main)...
+17:19:10 [INFO] Отправка кода на GitHub (git push -u origin main)...
+17:19:10 [INFO] $ git push -u origin main
+17:19:26 [INFO] branch 'main' set up to track 'origin/main'.
+17:19:26 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+   fe7d02d..8ef2da0  main -> main
+17:19:26 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:26 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:26 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:26 [INFO] Опубликовано: https://github.com/qwexhausted21/medCourse-hub-bot
+17:19:26 [INFO] Репозиторий добавлен в список сохранённых.
+04:33:48 [INFO] Выбрана папка: G:/BaoCode Projects/medCourse-hub-bot
+04:34:01 [INFO] === Начало публикации ===
+04:34:01 [INFO] Генерация README.md...
+04:34:01 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+04:34:01 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+04:34:01 [INFO] Проверка токена GitHub...
+04:34:01 [INFO] Проверка токена GitHub...
+04:34:01 [INFO] Токен валиден. Пользователь: qwexhausted21
+04:34:01 [INFO] Токен валиден. Пользователь: qwexhausted21
+04:34:02 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+04:34:02 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:03 [INFO] Видимость репозитория обновлена: приватный
+04:34:03 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:03 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:03 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+04:34:03 [INFO] Инициализация локального репозитория Git (git init)...
+04:34:03 [INFO] Инициализация локального репозитория Git (git init)...
+04:34:03 [INFO] $ git init
+04:34:03 [INFO] Reinitialized existing Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+04:34:03 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+04:34:03 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+04:34:03 [INFO] $ git config user.name PortfolioForge
+04:34:03 [INFO] $ git config user.email portfolioforge@localhost
+04:34:03 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+04:34:03 [INFO] Исключение .env из отслеживания Git (защита токена)...
+04:34:03 [INFO] $ git rm --cached --ignore-unmatch .env
+04:34:03 [INFO] Добавление всех файлов в индекс (git add -A)...
+04:34:03 [INFO] $ git add -A
+04:34:05 [INFO] warning: in the working copy of '.agents/developer/DEV_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/qa/QA_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/releases/RELEASE_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/reviewer/REVIEW_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/security/SECURITY_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'TASK_BOARD.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/handlers/admin.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/webhook.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agent-state/STATE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agent-state/state.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/legal/LEGAL_ACTION_PLAN.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/legal/LEGAL_COMPLIANCE_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+04:34:05 [INFO] $ git status --porcelain
+04:34:05 [INFO] A  .agent-state/STATE.md
+A  .agent-state/state.json
+M  .agents/developer/DEV_REPORT.md
+A  .agents/legal/LEGAL_ACTION_PLAN.md
+A  .agents/legal/LEGAL_COMPLIANCE_REPORT.md
+M  .agents/qa/QA_REPORT.md
+M  .agents/releases/RELEASE_REPORT.md
+M  .agents/reviewer/REVIEW_REPORT.md
+M  .agents/security/SECURITY_REPORT.md
+M  TASK_BOARD.md
+M  app/config.py
+M  app/database.py
+M  app/handlers/admin.py
+M  app/webhook.py
+M  main.py
+A  test_results.txt
+04:34:05 [INFO] Создание коммита...
+04:34:05 [INFO] Создание коммита...
+04:34:05 [INFO] $ git commit -m Initial commit
+04:34:06 [INFO] [main 4180e53] Initial commit
+ 16 files changed, 881 insertions(+), 302 deletions(-)
+ create mode 100644 .agent-state/STATE.md
+ create mode 100644 .agent-state/state.json
+ create mode 100644 .agents/legal/LEGAL_ACTION_PLAN.md
+ create mode 100644 .agents/legal/LEGAL_COMPLIANCE_REPORT.md
+ create mode 100644 test_results.txt
+04:34:06 [INFO] Переключение на ветку main...
+04:34:06 [INFO] Переключение на ветку main...
+04:34:06 [INFO] $ git branch -M main
+04:34:06 [INFO] Добавление удалённого репозитория origin...
+04:34:06 [INFO] Добавление удалённого репозитория origin...
+04:34:06 [INFO] $ git remote remove origin
+04:34:07 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+04:34:07 [INFO] Отправка кода на GitHub (git push -u origin main)...
+04:34:07 [INFO] Отправка кода на GitHub (git push -u origin main)...
+04:34:07 [INFO] $ git push -u origin main
+04:34:18 [INFO] branch 'main' set up to track 'origin/main'.
+04:34:18 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+   8ef2da0..4180e53  main -> main
+04:34:18 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:18 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:18 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:18 [INFO] Опубликовано: https://github.com/qwexhausted21/medCourse-hub-bot
+04:34:18 [INFO] Репозиторий добавлен в список сохранённых.
+05:09:06 [INFO] === Начало публикации ===
+05:09:06 [INFO] Генерация README.md...
+05:09:06 [INFO] README.md сохранён (отредактированный): G:\BaoCode Projects\medCourse-hub-bot\README.md
+05:09:06 [INFO] $ git config --global --add safe.directory G:\BaoCode Projects\medCourse-hub-bot
+05:09:06 [INFO] Проверка токена GitHub...
+05:09:06 [INFO] Проверка токена GitHub...
+05:09:07 [INFO] Токен валиден. Пользователь: qwexhausted21
+05:09:07 [INFO] Токен валиден. Пользователь: qwexhausted21
+05:09:07 [INFO] Репозиторий 'qwexhausted21/medCourse-hub-bot' уже найден.
+05:09:07 [INFO] Использую существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:08 [INFO] Видимость репозитория обновлена: приватный
+05:09:08 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:08 [INFO] Используется существующий репозиторий: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:08 [INFO] Локальный репозиторий Git (.git) уже существует — используем его.
+05:09:08 [INFO] Инициализация локального репозитория Git (git init)...
+05:09:08 [INFO] Инициализация локального репозитория Git (git init)...
+05:09:08 [INFO] $ git init
+05:09:08 [INFO] Reinitialized existing Git repository in G:/BaoCode Projects/medCourse-hub-bot/.git/
+05:09:08 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+05:09:08 [INFO] Настройка локальной идентичности Git (user.name / user.email)...
+05:09:08 [INFO] $ git config user.name PortfolioForge
+05:09:08 [INFO] $ git config user.email portfolioforge@localhost
+05:09:09 [INFO] Создание .gitignore (исключаем .env, venv, кэш)...
+05:09:09 [INFO] Исключение .env из отслеживания Git (защита токена)...
+05:09:09 [INFO] $ git rm --cached --ignore-unmatch .env
+05:09:09 [INFO] Добавление всех файлов в индекс (git add -A)...
+05:09:09 [INFO] $ git add -A
+05:09:09 [INFO] warning: in the working copy of '.agents/developer/DEV_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/qa/QA_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/releases/RELEASE_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.agents/security/SECURITY_REPORT.md', LF will be replaced by CRLF the next time Git touches it
+05:09:09 [INFO] $ git status --porcelain
+05:09:09 [INFO] M  .agents/developer/DEV_REPORT.md
+M  .agents/qa/QA_REPORT.md
+M  .agents/releases/RELEASE_REPORT.md
+M  .agents/security/SECURITY_REPORT.md
+05:09:09 [INFO] Создание коммита...
+05:09:09 [INFO] Создание коммита...
+05:09:09 [INFO] $ git commit -m Initial commit
+05:09:10 [INFO] [main f9364ab] Initial commit
+ 4 files changed, 48 insertions(+), 9 deletions(-)
+05:09:10 [INFO] Переключение на ветку main...
+05:09:10 [INFO] Переключение на ветку main...
+05:09:10 [INFO] $ git branch -M main
+05:09:10 [INFO] Добавление удалённого репозитория origin...
+05:09:10 [INFO] Добавление удалённого репозитория origin...
+05:09:10 [INFO] $ git remote remove origin
+05:09:10 [INFO] $ git remote add origin https://github.com/qwexhausted21/medCourse-hub-bot.git
+05:09:10 [INFO] Отправка кода на GitHub (git push -u origin main)...
+05:09:10 [INFO] Отправка кода на GitHub (git push -u origin main)...
+05:09:10 [INFO] $ git push -u origin main
+05:09:23 [INFO] branch 'main' set up to track 'origin/main'.
+05:09:23 [INFO] To https://github.com/qwexhausted21/medCourse-hub-bot.git
+   4180e53..f9364ab  main -> main
+05:09:23 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:23 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:23 [INFO] Готово! Проект опубликован: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:23 [INFO] Опубликовано: https://github.com/qwexhausted21/medCourse-hub-bot
+05:09:23 [INFO] Репозиторий добавлен в список сохранённых.
